@@ -6,9 +6,9 @@ local DOWN = 2
 
 -- Edit modes
 local LINE = 1
-local NOTE_OR_FX = 2
+local COLUMN = 2
 local VOL_PAN_DELAY = 3
-local ALL_BUT_NOTE = 4
+local EFFECTS = 4
 local NOTE_ONLY = 5
 
 -- Note parameters (for deleting)
@@ -19,7 +19,7 @@ local DELAY = 4
 local FX = 5
 
 -- Default delete mode
-local EDIT_MODE = LINE
+local EDIT_MODE = COLUMN
 
 
 --------------------------------------------------------------------------------
@@ -28,12 +28,12 @@ local EDIT_MODE = LINE
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Nudge note up",
-  invoke = function() nudge_note(UP) end
+  invoke = function() nudge_line(UP) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Nudge note down",
-  invoke = function() nudge_note(DOWN) end
+  invoke = function() nudge_line(DOWN) end
 }
 
 renoise.tool():add_keybinding {
@@ -74,6 +74,26 @@ renoise.tool():add_keybinding {
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Copy effect column and move up",
   invoke = function() copy_effects(UP) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Copy note and move down",
+  invoke = function() copy_note_only(DOWN) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Copy note and move up",
+  invoke = function() copy_note_only(UP) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Multipurpose copy and move down",
+  invoke = function() multi_purpose_copy(EDIT_MODE, DOWN) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Multipurpose copy and move up",
+  invoke = function() multi_purpose_copy(EDIT_MODE, UP) end
 }
 
 renoise.tool():add_keybinding {
@@ -120,32 +140,32 @@ renoise.tool():add_keybinding {
 -- Delete keybindings
 --------------------------------------------------
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Multi purpose delete (uses delete modes)",
+  name = "Pattern Editor:Insert/Delete:Multipurpose delete (uses edit modes)",
   invoke = function() multi_purpose_delete(EDIT_MODE) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Delete Mode to Line",
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to Line",
   invoke = function() set_edit_mode(LINE) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Delete Mode to Full note or FX",
-  invoke = function() set_edit_mode(NOTE_OR_FX) end
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to Full note or FX",
+  invoke = function() set_edit_mode(COLUMN) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Delete Mode to volume, pan, delay only",
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to volume, pan, delay only",
   invoke = function() set_edit_mode(VOL_PAN_DELAY) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Delete Mode to delete all but note data",
-  invoke = function() set_edit_mode(ALL_BUT_NOTE) end
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to delete all but note data",
+  invoke = function() set_edit_mode(EFFECTS) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Delete Mode to delete note only",
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to delete note only",
   invoke = function() set_edit_mode(NOTE_ONLY) end
 }
 
@@ -186,9 +206,9 @@ renoise.tool():add_keybinding {
 -- Note: The jump() function used below is in another file, pattern_editor_navigation.lua
 
 ---------------------------
--- Nudge note up or down --
+-- Nudge line up or down --
 ---------------------------
-function nudge_note(direction)
+function nudge_line(direction)
   local song = renoise.song()
   local selected_line_index = song.selected_line_index
   local selected_line = song.selected_line
@@ -197,6 +217,23 @@ function nudge_note(direction)
   next_line:copy_from(selected_line)
   selected_line:clear()
   jump(direction)
+end
+
+---------------------------
+-- Multiporpose copy --
+---------------------------
+function multi_purpose_copy(mode, direction)
+  if mode == LINE then
+    copy_line(direction)
+  elseif mode == COLUMN then
+    copy_column(direction)
+  elseif mode == VOL_PAN_DELAY then
+    copy_vol_pan_delay(direction)
+  elseif mode == EFFECTS then
+    copy_effects(direction)
+  elseif mode == NOTE_ONLY then
+    copy_note_only(direction)
+  end
 end
 
 -------------------------------
@@ -256,6 +293,7 @@ function copy_vol_pan_delay(direction)
   local selection = song.selected_note_column
 
   if selection == nil then
+    -- show_status_message("Attempting to copy volume, panning, and delay data, but no note column is selected.")
     return
   end
 
@@ -304,6 +342,36 @@ function copy_effects(direction)
   jump(direction)
 end
 
+------------------
+-- Copy note only --
+------------------
+function copy_note_only(direction)
+  local song = renoise.song()
+  local selected_line_index = song.selected_line_index
+  local selection = song.selected_note_column
+
+  print("we made it here")
+  if selection == nil then
+    return
+  end
+
+  local step = (direction == DOWN) and 1 or -1
+
+  if selected_line_index + step < 1 or selected_line_index + step > song.selected_pattern.number_of_lines then
+    return
+  end
+
+  local next_line = song.selected_pattern_track.lines[selected_line_index + step]
+  local next_column = next_line.note_columns[song.selected_note_column_index]
+
+  if (next_column ~= nil) then
+    next_column.note_value = selection.note_value
+    next_column.note_string = selection.note_string
+    next_column.instrument_value = selection.instrument_value
+    next_column.instrument_string = selection.instrument_string
+  end
+  jump(direction)
+end
 
 --------------------------------------------------------------------------------
 -- DELETE FUNCTIONS
@@ -318,20 +386,14 @@ function multi_purpose_delete(type)
   -- map changing the edit mode to another keybinding. Then,
   -- you can change the edit mode and delete different things, 
   -- depending on what you're working on
-  -- 
-  -- LINE: Delete entire line
-  -- NOTE_OR_FX: Deletes the column that's selected, including vol, pan, and delay (either note or effect)
-  -- VOL_PAN_DELAY: Deletes only vol, pan, and delay
-  -- ALL_BUT_NOTE: Deletes vol, pan, delay, and all effect columns. Preserves note data
-  -- NOTE_ONLY: Deletes only the note data, leaving vol, pan, delay, and effect columns intact
 
   if (type == LINE) then
     delete_line()
-  elseif (type == NOTE_OR_FX) then
+  elseif (type == COLUMN) then
     delete_selected_column()
   elseif (type == VOL_PAN_DELAY) then
     delete_vol_pan_delay()
-  elseif (type == ALL_BUT_NOTE) then
+  elseif (type == EFFECTS) then
     delete_vol_pan_delay()
     delete_fx_column_data()
   elseif (type == NOTE_ONLY) then
@@ -455,11 +517,11 @@ function set_edit_mode(mode)
   EDIT_MODE = mode
   if mode == LINE then
     show_status_message("Edit mode set to Line")
-  elseif mode == NOTE_OR_FX then
-    show_status_message("Edit mode set to Note or FX")
+  elseif mode == COLUMN then
+    show_status_message("Edit mode set to column")
   elseif mode == VOL_PAN_DELAY then
     show_status_message("Edit mode set to Volume, Pan, Delay")
-  elseif mode == ALL_BUT_NOTE then
+  elseif mode == EFFECTS then
     show_status_message("Edit mode set to All but Note")
   elseif mode == NOTE_ONLY then
     show_status_message("Edit mode set to Note Only")
