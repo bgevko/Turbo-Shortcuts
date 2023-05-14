@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RenoiseScriptingTool doc_version="0">
+  <ApiVersion>6.1</ApiVersion>
+  <Id>com.renoise.ExampleTool</Id>
+  <Version>1.0</Version>
+  <Author>Bogdan Gevko</Author>
+  <Name>Renoise Scripting Tool Example</Name>
+  <Category>Tool Development</Category>
+  <Description>An XRNX tool for learning.</Description>
+  <Homepage>http://scripting.renoise.com</Homepage>
+  <Icon>icon.png</Icon>
+</RenoiseScriptingTool>
