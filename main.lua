@@ -1,12 +1,17 @@
 ---@diagnostic disable: undefined-global
 --[[============================================================================
-com.renoise.ExampleTool.xrnx/main.lua
+com.renoise.TurboShortcuts.xrnx/main.lua
 ============================================================================]]--
+-- This file contains settings and utility functions for the tool.
+-- Keybindings are defined in seperate files, named after the category that they belong to
+--    i.e. pattern_editor_insert_delete.lua contains keybinds for Pattern Editor: Insert/Delete, etc.
+--    If you want to add keybindings, start with their respective category file. From there, you can
+--    see which functions are used, which will be defined in their own files.
 
 -- Includes
-require "pattern_editor_navigation"
-require "pattern_editor_insert_delete"
-require "switching_windows"
+require "Pattern_Editor.navigation_keybindings"
+require "Pattern_Editor.insert_delete_keybindings"
+require "Global.global_keybindings"
 
 --------------------------------------------------------------------------------
 -- PREFERENCES
