@@ -6,7 +6,9 @@
 
 require "Pattern_Editor.copy_functions" -- All copy and nudge functions are defined here
 require "Pattern_Editor.delete_functions" -- All delete functions are defined here
+require "Pattern_Editor.fx_functions" -- All fx functions are defined here
 require "Pattern_Editor.constants"
+
 
 --------------------------------------------------------------------------------
 -- KEY BINDINGS
@@ -140,6 +142,10 @@ renoise.tool():add_keybinding {
 }
 
 renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Multipurpose column delete",
+  invoke = function() multi_purpose_column_delete(EDIT_MODE) end
+}
+renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set Edit Mode to Line",
   invoke = function() set_edit_mode(LINE) end
 }
@@ -192,6 +198,11 @@ renoise.tool():add_keybinding {
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Delete entire column",
   invoke = function() delete_entire_column() end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Sample Command Set Arp",
+  invoke = function() set_arp() end
 }
 
 --------------------------

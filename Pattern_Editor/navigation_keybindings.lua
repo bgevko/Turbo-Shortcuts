@@ -121,3 +121,13 @@ renoise.tool():add_keybinding {
   invoke = function() move_loop_to_current_pos() end
 }
 
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Navigation:Jump to next note in loop block",
+  invoke = function() move_to_note_in_block_range(DOWN) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Navigation:Jump to previous note in loop block",
+  invoke = function() move_to_note_in_block_range(UP) end
+}
+

@@ -125,23 +125,34 @@ end
 --------------------
 function move_loop_to_current_pos()
   local transport = renoise.song().transport
+  
   local block_size = transport.loop_end.line - transport.loop_start.line
-  local subdivision_start = find_block_start(block_size) -- function defined in pattern_editor_insert_delete.lua
+  local subdivision_start = find_block_start(block_size) -- function defined copy_functions.lua
+  
+  local current_pos = transport.edit_pos.line
   local loop_start = transport.loop_start.line
-  print(subdivision_start)
-  print(block_size)
-  if loop_start < subdivision_start then
-    while loop_start < subdivision_start do
-      transport:loop_block_move_forwards()
-      loop_start = transport.loop_start.line
-    end
-  elseif loop_start > subdivision_start then
-    while loop_start > subdivision_start do
-      transport:loop_block_move_backwards()
-      loop_start = transport.loop_start.line
+  local loop_end = transport.loop_end.line
+
+  -- I set this up as a timer because renoise won't update the range correctly if it's performed too quickly
+  local function update_loop()
+    current_pos = transport.edit_pos.line
+    loop_start = transport.loop_start.line
+    loop_end = transport.loop_end.line
+  
+    if transport.loop_block_enabled and not (current_pos >= loop_start and current_pos <= loop_end) then
+      if loop_start < subdivision_start then
+        transport:loop_block_move_forwards()
+      elseif loop_start > subdivision_start then
+        transport:loop_block_move_backwards()
+      end
+    else
+      renoise.tool():remove_timer(update_loop)
     end
   end
+
+  renoise.tool():add_timer(update_loop, 1)
 end
+
 
 --------------------------
 -- Get quantized loop range from current position --
@@ -152,4 +163,113 @@ function get_loop_block_range(block_size, starting_pos) -- starting_pos optional
   local range_end = range_start + block_size
   local range = song.selected_pattern_track:lines_in_range(range_start, range_end - 1)
   return range
+end
+
+--------------------------
+-- Get loop block range --
+--------------------------
+function get_loop_block_range()
+  local transport = renoise.song().transport
+  return transport.loop_start.line, transport.loop_end.line
+end
+
+--------------------------
+-- Move to next/previous note in loop range
+--------------------------
+function move_to_note_in_block_range(direction)
+  local song = renoise.song()
+  local pos = song.transport.edit_pos
+  local start_block, end_block = get_loop_block_range()
+  local note_positions = get_note_positions_in_block_range(start_block, end_block)
+  local note_column
+
+  if song.transport.loop_block_enabled == false then
+    return
+  end
+
+  if note_positions == nil then
+    return
+  end
+
+  -- UP direction
+  if direction == UP then
+    for i = #note_positions, 1, -1 do
+      if note_positions[i] < pos.line then
+        pos.line = note_positions[i]
+        break
+      -- If we reach the first note in the loop, jump to the last note
+      elseif i == 1 then
+        pos.line = note_positions[#note_positions]
+      end
+    end
+  
+  -- DOWN direction
+  elseif direction == DOWN then
+    for i = 1, #note_positions do
+      if note_positions[i] > pos.line then
+        pos.line = note_positions[i]
+        break
+      -- If we reach the last note in the loop, jump to the first note
+      elseif i == #note_positions then
+        pos.line = note_positions[1]
+      end
+    end
+  end
+
+  -- if direction == UP then
+  --   pos.line = pos.line - 1
+
+  --   for i = pos.line, start_block, -1 do
+  --     note_column = song.selected_pattern_track:line(i).note_columns[1]
+
+  --     if note_column == nil then
+  --       return
+  --     end
+
+  --     if (note_column.note_value ~= 121) and pos.line > start_block then
+  --       pos.line = i
+  --       break
+  --     end
+  --   end
+
+  -- elseif direction == DOWN then
+  --   if pos.line > end_block then
+  --     pos.line = start_block
+  --   end
+
+  --   pos.line = pos.line + 1
+
+  --   for i = pos.line, end_block do
+  --     note_column = song.selected_pattern_track:line(i).note_columns[1]
+  --     if note_column == nil then
+  --       return
+  --     end
+  --     if (note_column.note_value ~= 121) then
+  --       pos.line = i
+  --       break
+  --     end
+  --   end
+  -- end
+  song.transport.edit_pos = pos
+end
+
+--------------------------
+-- Get note positions in block range --
+--------------------------
+function get_note_positions_in_block_range(start_block, end_block)
+  local song = renoise.song()
+  local note_positions = {}
+  local note_column
+
+  for i = start_block, end_block do
+    note_column = song.selected_pattern_track:line(i).note_columns[1]
+    if note_column == nil then
+      return
+    end
+    if (note_column.note_value ~= 121) then
+      table.insert(note_positions, i)
+    end
+  end
+
+  return note_positions
 end
