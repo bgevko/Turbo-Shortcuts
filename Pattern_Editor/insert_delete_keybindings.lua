@@ -205,6 +205,26 @@ renoise.tool():add_keybinding {
   invoke = function() set_arp() end
 }
 
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment arp x",
+  invoke = function() dual_increment_fx(X, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement arp x",
+  invoke = function() dual_increment_fx(X, -1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment arp y",
+  invoke = function() dual_increment_fx(Y, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement arp y",
+  invoke = function() dual_increment_fx(Y, -1) end
+}
+
 --------------------------
 -- Multi purpose duplicate   --
 --------------------------

@@ -24,3 +24,7 @@ VOL = 2
 PAN = 3
 DELAY = 4
 FX = 5
+
+-- FX parameters
+X = "x"
+Y = "y"
