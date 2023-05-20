@@ -8,15 +8,38 @@ require "Pattern_Editor.constants"
 -----------------------
 -- Set Effect --
 -----------------------
+
+function set_effect(type)
+  local col = renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
+  
+end
 function set_arp()
-  local col = renoise.song().selected_line.effect_columns[1]
+  local col = renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
   col.number_value = 10 -- code for arpeggio, 0A
   col.amount_value = 0 
 end
 
+-----------------------
+-- Set slide --
+-----------------------
+function set_slide(direction)
+  local col = renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
+
+  if direction == UP then
+    col.number_string = '0U'
+    col.amount_string = '00'
+  elseif direction == DOWN then
+    col.number_string = '0D'
+    col.amount_string = '00'
+  end
+end
+
+-----------------------
+-- Increment two sided fx --
+-----------------------
 function dual_increment_fx(side, amount, col)
   local range = 16 -- 16 because 0-F
-  col = renoise.song().selected_line.effect_columns[1] or col
+  col = renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN] or col
   if col.number_value == 0 then
     return
   end
@@ -33,6 +56,20 @@ function dual_increment_fx(side, amount, col)
   end
 end
 
+-----------------------
+-- Increment single sided fx --
+-----------------------
+function single_increment_fx(amount, col)
+  local range = 256 -- 256 because 00-FF
+  col = renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN] or col
+  if col.number_value == 0 then
+    return
+  end
+  local value = col.amount_value
+  value = increment(value, amount, range)
+  col.amount_value = value
+end
+
 function increment(value, amount, range)
   -- Error if range is not 16 or 256
   if range ~= 16 and range ~= 256 then
@@ -40,3 +77,4 @@ function increment(value, amount, range)
   end
   return (value + amount) % range
 end
+
