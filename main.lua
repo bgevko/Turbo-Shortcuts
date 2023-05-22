@@ -70,11 +70,10 @@ function show_status_message(message)
   local status_message_count = status_message_count + 1
 
   renoise.app():show_status(
-    ("com.renoise.ExampleTool: ".. message):format(
+    (message):format(
      status_message_count)
   )
 end
-
 
 -----------------------
 -- Auto reload debug --

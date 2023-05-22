@@ -201,46 +201,156 @@ renoise.tool():add_keybinding {
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Effect Set Arp",
-  invoke = function() set_arp() end
+  name = "Pattern Editor:Insert/Delete:Set FX ARPEGGIO",
+  invoke = function() set_effect(ARPEGGIO) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Effect Set Slide Up",
-  invoke = function() set_slide(UP) end
+  name = "Pattern Editor:Insert/Delete:Set FX SLIDE UP",
+  invoke = function() set_effect(SLIDE_UP) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Effect Set Slide Down",
-  invoke = function() set_slide(DOWN) end
+  name = "Pattern Editor:Insert/Delete:Set FX SLIDE DOWN",
+  invoke = function() set_effect(SLIDE_DOWN) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment fx first half",
+  name = "Pattern Editor:Insert/Delete:Set FX all notes ARPEGGIO",
+  invoke = function() set_effect_all_notes(ARPEGGIO) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Set FX all notes in loop ARPEGGIO",
+  invoke = function() set_effect_all_notes_in_loop_block(ARPEGGIO) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment FX xx--",
   invoke = function() dual_increment_fx(X, 1) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement fx first half",
+  name = "Pattern Editor:Insert/Delete:Decrement FX xx--",
   invoke = function() dual_increment_fx(X, -1) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment fx second half",
+  name = "Pattern Editor:Insert/Delete:Increment FX --yy",
   invoke = function() dual_increment_fx(Y, 1) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement fx second half",
+  name = "Pattern Editor:Insert/Delete:Decrement FX --yy",
   invoke = function() dual_increment_fx(Y, -1) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment fx",
+  name = "Pattern Editor:Insert/Delete:Increment FX xxxx",
   invoke = function() single_increment_fx(1) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement fx",
+  name = "Pattern Editor:Insert/Delete:Decrement FX xxxx",
   invoke = function() single_increment_fx(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment FX all notes xx--",
+  invoke = function() dual_increment_fx_all_notes(X, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement FX all notes xx--",
+  invoke = function() dual_increment_fx_all_notes(X, -1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment FX all notes --yy",
+  invoke = function() dual_increment_fx_all_notes(Y, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement FX all notes --yy",
+  invoke = function() dual_increment_fx_all_notes(Y, -1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment FX all notes xxxx",
+  invoke = function() single_increment_fx_all_notes(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement FX all notes xxxx",
+  invoke = function() single_increment_fx_all_notes(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment FX loop block xx--",
+  invoke = function() dual_increment_fx_in_loop(X, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement FX loop block xx--",
+  invoke = function() dual_increment_fx_in_loop(X, -1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment FX loop block --yy",
+  invoke = function() dual_increment_fx_in_loop(Y, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement FX loop block --yy",
+  invoke = function() dual_increment_fx_in_loop(Y, -1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment FX loop block xxxx",
+  invoke = function() single_increment_fx_in_loop(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement FX loop block xxxx",
+  invoke = function() single_increment_fx_in_loop(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete: Set FX column 1 for edits",
+  invoke = function() set_fx_column(FX1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete: Set FX column 2 for edits",
+  invoke = function() set_fx_column(FX2) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete: Set FX column 3 for edits",
+  invoke = function() set_fx_column(FX3) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete: Set FX column 4 for edits",
+  invoke = function() set_fx_column(FX4) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete: Set FX column 5 for edits",
+  invoke = function() set_fx_column(FX5) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete: Set FX column 6 for edits",
+  invoke = function() set_fx_column(FX6) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete: Set FX column 7 for edits",
+  invoke = function() set_fx_column(FX7) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete: Set FX column 8 for edits",
+  invoke = function() set_fx_column(FX8) end
 }

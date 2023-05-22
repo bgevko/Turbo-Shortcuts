@@ -179,8 +179,7 @@ end
 function move_to_note_in_block_range(direction)
   local song = renoise.song()
   local pos = song.transport.edit_pos
-  local start_block, end_block = get_loop_block_range()
-  local note_positions = get_note_positions_in_block_range(start_block, end_block)
+  local note_positions = get_notes_in_loop_block()
   local note_column
 
   if song.transport.loop_block_enabled == false then
@@ -215,48 +214,13 @@ function move_to_note_in_block_range(direction)
       end
     end
   end
-
-  -- if direction == UP then
-  --   pos.line = pos.line - 1
-
-  --   for i = pos.line, start_block, -1 do
-  --     note_column = song.selected_pattern_track:line(i).note_columns[1]
-
-  --     if note_column == nil then
-  --       return
-  --     end
-
-  --     if (note_column.note_value ~= 121) and pos.line > start_block then
-  --       pos.line = i
-  --       break
-  --     end
-  --   end
-
-  -- elseif direction == DOWN then
-  --   if pos.line > end_block then
-  --     pos.line = start_block
-  --   end
-
-  --   pos.line = pos.line + 1
-
-  --   for i = pos.line, end_block do
-  --     note_column = song.selected_pattern_track:line(i).note_columns[1]
-  --     if note_column == nil then
-  --       return
-  --     end
-  --     if (note_column.note_value ~= 121) then
-  --       pos.line = i
-  --       break
-  --     end
-  --   end
-  -- end
   song.transport.edit_pos = pos
 end
 
 --------------------------
 -- Get note positions in block range --
 --------------------------
-function get_note_positions_in_block_range(start_block, end_block)
+function get_notes_in_block(start_block, end_block)
   local song = renoise.song()
   local note_positions = {}
   local note_column
@@ -272,4 +236,19 @@ function get_note_positions_in_block_range(start_block, end_block)
   end
 
   return note_positions
+end
+
+--------------------------
+-- Get all notes in pattern --
+--------------------------
+function get_notes_in_pattern()
+  return get_notes_in_block(1, renoise.song().selected_pattern.number_of_lines)
+end
+
+--------------------------
+-- Get all notes in loop block --
+--------------------------
+function get_notes_in_loop_block()
+  local start_block, end_block = get_loop_block_range()
+  return get_notes_in_block(start_block, end_block)
 end

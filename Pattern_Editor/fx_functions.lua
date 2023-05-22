@@ -8,29 +8,66 @@ require "Pattern_Editor.constants"
 -----------------------
 -- Set Effect --
 -----------------------
+function set_effect(type, col)
+  local col = col or renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
+  local effect_string = ''
 
-function set_effect(type)
-  local col = renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
-  
-end
-function set_arp()
-  local col = renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
-  col.number_value = 10 -- code for arpeggio, 0A
-  col.amount_value = 0 
-end
-
------------------------
--- Set slide --
------------------------
-function set_slide(direction)
-  local col = renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
-
-  if direction == UP then
+  if type == ARPEGGIO then
+    col.number_string = '0A'
+    col.amount_string = '00'
+    effect_string = 'ARPEGGIO'
+  elseif type == SLIDE_UP then
     col.number_string = '0U'
     col.amount_string = '00'
-  elseif direction == DOWN then
+    effect_string = 'SLIDE UP'
+  elseif type == SLIDE_DOWN then
     col.number_string = '0D'
     col.amount_string = '00'
+    effect_string = 'SLIDE DOWN'
+  else
+    error("Invalid effect type")
+    return
+  end
+
+  show_status_message(effect_string .." set to col " .. SELECTED_FX_COLUMN .. ".")
+
+end
+
+-----------------------
+-- Set effect on all notes --
+-----------------------
+function set_effect_all_notes(type)
+  local song = renoise.song()
+  local note_positions = get_notes_in_pattern()
+
+  if note_positions == nil then
+    return
+  end
+
+  for i = 1, #note_positions do
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    if col then
+      set_effect(type, col)
+    end
+  end
+end
+
+-----------------------
+-- Set effect on all notes in loop block --
+-----------------------
+function set_effect_all_notes_in_loop_block(type)
+  local song = renoise.song()
+  local note_positions = get_notes_in_loop_block()
+
+  if note_positions == nil then
+    return
+  end
+
+  for i = 1, #note_positions do
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    if col then
+      set_effect(type, col)
+    end
   end
 end
 
@@ -39,7 +76,7 @@ end
 -----------------------
 function dual_increment_fx(side, amount, col)
   local range = 16 -- 16 because 0-F
-  col = renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN] or col
+  col = col or renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
   if col.number_value == 0 then
     return
   end
@@ -61,7 +98,7 @@ end
 -----------------------
 function single_increment_fx(amount, col)
   local range = 256 -- 256 because 00-FF
-  col = renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN] or col
+  col = col or renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN] 
   if col.number_value == 0 then
     return
   end
@@ -70,6 +107,86 @@ function single_increment_fx(amount, col)
   col.amount_value = value
 end
 
+-----------------------
+-- Increment two sided all notes --
+-----------------------
+function dual_increment_fx_all_notes(side, amount)
+  local song = renoise.song()
+  local note_positions = get_notes_in_pattern()
+
+  if note_positions == nil then
+    return
+  end
+
+  for i = 1, #note_positions do
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    if col then
+      dual_increment_fx(side, amount, col)
+    end
+  end
+end
+
+-----------------------
+-- Increment single sided all notes --
+-----------------------
+function single_increment_fx_all_notes(amount)
+  local song = renoise.song()
+  local note_positions = get_notes_in_pattern()
+
+  if note_positions == nil then
+    return
+  end
+
+  for i = 1, #note_positions do
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    if col then
+      single_increment_fx(amount, col)
+    end
+  end
+end
+
+-----------------------
+-- Increment two sided in loop block --
+-----------------------
+function dual_increment_fx_in_loop(side, amount)
+  local song = renoise.song()
+  local note_positions = get_notes_in_loop_block()
+
+  if note_positions == nil then
+    return
+  end
+
+  for i = 1, #note_positions do
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    if col then
+      dual_increment_fx(side, amount, col)
+    end
+  end
+end
+
+-----------------------
+-- Increment single sided in loop block --
+-----------------------
+
+function single_increment_fx_in_loop(amount)
+  local song = renoise.song()
+  local note_positions = get_notes_in_loop_block()
+
+  if note_positions == nil then
+    return
+  end
+
+  for i = 1, #note_positions do
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    if col then
+      single_increment_fx(amount, col)
+    end
+  end
+end
+
+-----------------------
+-- Increment helper --
+-----------------------
 function increment(value, amount, range)
   -- Error if range is not 16 or 256
   if range ~= 16 and range ~= 256 then
@@ -78,3 +195,30 @@ function increment(value, amount, range)
   return (value + amount) % range
 end
 
+-----------------------
+-- Set FX column  --
+-----------------------
+function set_fx_column(column)
+
+  if column == FX1 then
+    SELECTED_FX_COLUMN = FX1
+  elseif column == FX2 then
+    SELECTED_FX_COLUMN = FX2
+  elseif column == FX3 then
+    SELECTED_FX_COLUMN = FX3
+  elseif column == FX4 then
+    SELECTED_FX_COLUMN = FX4
+  elseif column == FX5 then
+    SELECTED_FX_COLUMN = FX5
+  elseif column == FX6 then
+    SELECTED_FX_COLUMN = FX6
+  elseif column == FX7 then
+    SELECTED_FX_COLUMN = FX7
+  elseif column == FX8 then
+    SELECTED_FX_COLUMN = FX8
+  else
+    error("Column must be FX1, FX2, FX3, FX3, FX4, FX5, FX6, FX7, or FX8")
+    return
+  end
+  show_status_message("Selected FX column for edits: " .. SELECTED_FX_COLUMN)
+end
