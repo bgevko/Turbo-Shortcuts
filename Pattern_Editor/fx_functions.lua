@@ -10,6 +10,7 @@ require "Pattern_Editor.constants"
 -----------------------
 function set_effect(type, col)
   local col = col or renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
+  local note_col = renoise.song().selected_note_column
   local effect_string = ''
 
   if type == ARPEGGIO then
@@ -24,6 +25,12 @@ function set_effect(type, col)
     col.number_string = '0D'
     col.amount_string = '00'
     effect_string = 'SLIDE DOWN'
+  elseif type == NOTE_DELAY_25 then
+    note_col.delay_string = '40'
+  elseif type == NOTE_DELAY_50 then
+    note_col.delay_string = '80'
+  elseif type == NOTE_DELAY_75 then
+    note_col.delay_string = 'C0'
   else
     error("Invalid effect type")
     return
@@ -105,6 +112,36 @@ function single_increment_fx(amount, col)
   local value = col.amount_value
   value = increment(value, amount, range)
   col.amount_value = value
+end
+
+-----------------------
+-- Increment note delay, volume, or panning --
+-----------------------
+function increment_note_property(property, amount)
+  local note_col = renoise.song().selected_note_column
+  local range = 256
+  local value = 0
+
+  if property == DELAY then
+    value = note_col.delay_value
+  elseif property == VOL then
+    value = note_col.volume_value
+  elseif property == PAN then
+    value = note_col.panning_value
+  else
+    error("Invalid property")
+    return
+  end
+
+  value = increment(value, amount, range)
+
+  if property == DELAY then
+    note_col.delay_value = value
+  elseif property == VOL then
+    note_col.volume_value = value
+  elseif property == PAN then
+    note_col.panning_value = value
+  end
 end
 
 -----------------------

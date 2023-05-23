@@ -201,6 +201,21 @@ renoise.tool():add_keybinding {
 }
 
 renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Set note delay 25%",
+  invoke = function() set_effect(NOTE_DELAY_25) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Set note delay 50%",
+  invoke = function() set_effect(NOTE_DELAY_50) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Set note delay 75%",
+  invoke = function() set_effect(NOTE_DELAY_75) end
+}
+
+renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set FX ARPEGGIO",
   invoke = function() set_effect(ARPEGGIO) end
 }
@@ -223,6 +238,26 @@ renoise.tool():add_keybinding {
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set FX all notes in loop ARPEGGIO",
   invoke = function() set_effect_all_notes_in_loop_block(ARPEGGIO) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment note delay 10%",
+  invoke = function() increment_note_property(DELAY, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement note delay 10%",
+  invoke = function() increment_note_property(DELAY, -16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment note delay 25%",
+  invoke = function() increment_note_property(DELAY, 64) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement note delay 25%",
+  invoke = function() increment_note_property(DELAY, -64) end
 }
 
 renoise.tool():add_keybinding {
