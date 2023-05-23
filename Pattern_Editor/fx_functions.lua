@@ -41,6 +41,33 @@ function set_effect(type, col)
 end
 
 -----------------------
+-- increment delay on multiple notes
+-----------------------
+function increment_delay_multiple_notes(subdivision, amount)
+  local song = renoise.song()
+  local max_lines = song.selected_pattern.number_of_lines
+  local multipler = 1
+
+  if subdivision == EIGHTH then
+    multipler = 2
+  elseif subdivision == SIXTEENTH then
+    multipler = 4
+  else
+    error("Invalid subdivision")
+  end
+
+  local interval = multipler * math.floor(song.transport.lpb / 4)
+  local start_point = math.floor(song.transport.lpb / 4) + 1
+
+  for i = start_point, max_lines, interval do
+    local note_col = song.selected_pattern_track:line(i).note_columns[1]
+    if note_col then
+      increment_note_property(DELAY, amount, note_col)
+    end
+  end
+end
+
+-----------------------
 -- Set effect on all notes --
 -----------------------
 function set_effect_all_notes(type)
@@ -117,8 +144,13 @@ end
 -----------------------
 -- Increment note delay, volume, or panning --
 -----------------------
-function increment_note_property(property, amount)
-  local note_col = renoise.song().selected_note_column
+function increment_note_property(property, amount, note_col)
+  local note_col = note_col or renoise.song().selected_note_column
+
+  if note_col == nil then
+    return
+  end
+
   local range = 256
   local value = 0
 

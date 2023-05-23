@@ -261,6 +261,16 @@ renoise.tool():add_keybinding {
 }
 
 renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment delay all eighth notes 10%",
+  invoke = function() increment_delay_multiple_notes(EIGHTH, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement delay all eighth notes 10%",
+  invoke = function() increment_delay_multiple_notes(EIGHTH, -16) end
+}
+
+renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Increment FX xx--",
   invoke = function() dual_increment_fx(X, 1) end
 }

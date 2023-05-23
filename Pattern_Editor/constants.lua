@@ -25,6 +25,10 @@ PAN = 3
 DELAY = 4
 FX = 5
 
+-- Subdivisions
+EIGHTH = 1
+SIXTEENTH = 2
+
 -- FX parameters
 X = "x"
 Y = "y"
