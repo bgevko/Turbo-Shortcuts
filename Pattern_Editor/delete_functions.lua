@@ -6,16 +6,13 @@
 -- DELETE FUNCTIONS
 --------------------------------------------------------------------------------
 
------------------------------------------
--- Delete function with multiple modes --
------------------------------------------
+--[[ MULTI PURPOSE DELETE ------------------------------------------------------
+Deletes different things, depending on what edit mode is selected. The intention
+is to map this function to the general delete key and then switch modes depending
+on what you need.
+@params: mode - the edit mode that is currently selected
+--------------------------------------------------------------------------------]]
 function multi_purpose_delete(mode)
-  -- Intended use: 
-  -- Map this function to a keybinding, and 
-  -- map changing the edit mode to another keybinding. Then,
-  -- you can change the edit mode and delete different things, 
-  -- depending on what you're working on
-
   if (mode == LINE) then
     delete_line()
   elseif (mode == COLUMN) then
@@ -30,9 +27,12 @@ function multi_purpose_delete(mode)
   end
 end
 
------------------------------------------
--- Multipurpose column delete --
------------------------------------------
+
+--[[ MULTI PURPOSE COLUMN DELETE ------------------------------------------------------
+  This is a quick way to clear the entire vertical column of the pattern editor. Each
+  edit mode will clear different things.
+  @params: mode - the edit mode that is currently selected
+--------------------------------------------------------------------------------]]
 function multi_purpose_column_delete(mode)
   if (mode == LINE) then
     delete_column_lines()
@@ -47,27 +47,32 @@ function multi_purpose_column_delete(mode)
   end
 end
 
-------------------------
--- Delete entire line --
-------------------------
+
+--[[ DELETE LINE ------------------------------------------------------
+  Deletes the currently selected line in the pattern editor.
+--------------------------------------------------------------------------------]]
 function delete_line()
   local song = renoise.song()
   song.selected_line:clear()
 end
 
--------------------------
--- Delete vol pan and delay --
--------------------------
+
+--[[ DELETE VOL PAN DELAY ------------------------------------------------------
+  Deletes the currently selected volume, panning, and delay values in the pattern editor.
+--------------------------------------------------------------------------------]]
 function delete_vol_pan_delay()
-  local song = renoise.song()
   delete_single_selected(VOL)
   delete_single_selected(PAN)
   delete_single_selected(DELAY)
 end
 
------------------------------
--- Delete single parameter --
------------------------------
+
+--[[ DELETE SINGLE SELECTED PARAMETER ------------------------------------------------------
+  Deletes the given note parameter (note, volume, panning, delay, or effect) from the given
+  note column. If no note column is given, it will delete from the currently selected note
+  @params: parameter - the parameter to delete
+  @params: note_column - the note column to delete from
+  --------------------------------------------------------------------------------]]
 function delete_single_selected(parameter, note_column)
   local song = renoise.song()
   note_column = note_column or song.selected_note_column
@@ -96,9 +101,11 @@ function delete_single_selected(parameter, note_column)
   end
 
 end
--------------------------
--- Delete delete note column or effect column (based on what is selected)
--------------------------
+
+
+--[[ DELETE SELECTED COLUMN ------------------------------------------------------
+  Deletes the currently selected note or effect column in the pattern editor.
+  --------------------------------------------------------------------------------]]
 function delete_selected_column()
   local song = renoise.song()
   local selection = song.selected_note_column or song.selected_effect_column
@@ -110,9 +117,10 @@ function delete_selected_column()
   selection:clear()
 end 
 
----------------------------
--- Delete FX column data --
----------------------------
+
+--[[ DELETE FX COLUMN DATA ------------------------------------------------------
+  Deletes effects from every effect column in the currently selected line
+  --------------------------------------------------------------------------------]]
 function delete_fx_column_data()
   local song = renoise.song()
   local selection
@@ -122,9 +130,10 @@ function delete_fx_column_data()
   end
 end
 
----------------------------
--- Delete entire track  --
----------------------------
+
+--[[ DELETE ENTIRE TRACK ------------------------------------------------------
+  Deletes all notes and effects from the currently selected pattern track.
+  --------------------------------------------------------------------------------]]
 function delete_column_lines() 
   local song = renoise.song()
   local line_index = 1
@@ -137,9 +146,12 @@ function delete_column_lines()
   end
 end
 
----------------------------
--- Delete entire column  --
----------------------------
+
+--[[ DELETE COLUMNS (VERTICALLY)
+  If you're in note column mode, this will delete all note columns from the current 
+  line down. If you're in effect column mode, this will delete all effect
+  columns from the current line down
+--------------------------------------------------------------------------------]]
 function delete_column_columns()
   local song = renoise.song()
   local note_column_index = song.selected_note_column_index
@@ -159,9 +171,11 @@ function delete_column_columns()
   end
 end
 
----------------------------
--- Delete column vol pan and delay  --
----------------------------
+
+--[[ DELETE VOL PAN DELAY (VERTICALLY)
+  If you're in note column mode, this will delete all volume, panning, and delay
+  values from the current line down.
+--------------------------------------------------------------------------------]]
 function delete_column_vol_pan_delay()
   local song = renoise.song()
   local note_column_index = song.selected_note_column_index
@@ -176,9 +190,11 @@ function delete_column_vol_pan_delay()
   end
 end
 
----------------------------
--- Delete column note only  --
----------------------------
+
+--[[ DELETE NOTE ONLY (VERTICALLY)
+  If you're in note column mode, this will delete all note values from the current
+  line down.
+--------------------------------------------------------------------------------]]
 function delete_column_note_only()
   local song = renoise.song()
   local note_column_index = song.selected_note_column_index
@@ -191,9 +207,11 @@ function delete_column_note_only()
   end
 end
 
----------------------------
--- Delete entire effects only  --
----------------------------
+
+--[[ DELETE EFFECTS ONLY (VERTICALLY)
+  If you're in effect column mode, this will delete all effect values from the current
+  line down.
+--------------------------------------------------------------------------------]]
 function delete_column_effects()
   local song = renoise.song()
   local effect_column_index = song.selected_effect_column_index
@@ -205,9 +223,10 @@ function delete_column_effects()
   end
 end
 
---------------------------
--- Set edit mode type   --
---------------------------
+
+--[[ SET EDIT MODE --------------------------------------------------------------
+  Sets the edit mode to the given mode.
+--------------------------------------------------------------------------------]]
 function set_edit_mode(mode) 
   EDIT_MODE = mode
   if mode == LINE then

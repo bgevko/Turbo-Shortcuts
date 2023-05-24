@@ -11,7 +11,7 @@ require "Pattern_Editor.constants"
 
 
 --------------------------------------------------------------------------------
--- KEY BINDINGS
+-- Copy, nudge, duplicate keybindings
 --------------------------------------------------------------------------------
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Nudge note up",
@@ -200,6 +200,9 @@ renoise.tool():add_keybinding {
   invoke = function() delete_entire_column() end
 }
 
+------------------------------------------------------------------------
+-- Note and track effects keybindings
+------------------------------------------------------------------------
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set note delay 25%",
   invoke = function() set_effect(NOTE_DELAY_25) end
@@ -262,12 +265,22 @@ renoise.tool():add_keybinding {
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Increment delay all eighth notes 10%",
-  invoke = function() increment_delay_multiple_notes(EIGHTH, 16) end
+  invoke = function() inc_note_property_multiple(DELAY, EIGHTH, 16) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Decrement delay all eighth notes 10%",
-  invoke = function() increment_delay_multiple_notes(EIGHTH, -16) end
+  invoke = function() inc_note_property_multiple(DELAY, EIGHTH, -16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment delay all sixteenth notes 10%",
+  invoke = function() inc_note_property_multiple(DELAY, SIXTEENTH, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement delay all sixteenth notes 10%",
+  invoke = function() inc_note_property_multiple(DELAY, SIXTEENTH, -16) end
 }
 
 renoise.tool():add_keybinding {
