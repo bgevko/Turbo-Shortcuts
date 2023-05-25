@@ -28,6 +28,7 @@ FX = 5
 -- Subdivisions
 EIGHTH = 1
 SIXTEENTH = 2
+ALL_NOTES = 3
 
 -- FX parameters
 X = "x"

@@ -61,6 +61,7 @@ function increment_note_property(property, amount, note_col)
     value = note_col.volume_value
   elseif property == PAN then
     value = note_col.panning_value
+    range = 128
   else
     error("Invalid property")
     return
@@ -78,11 +79,31 @@ function increment_note_property(property, amount, note_col)
 end
 
 
---[[ INCREMENT NOTE PROPERTY MULTIPLE -----------------------------------------
+--[[ INCREMENT NOTE PROPERTY ALL ----------------------------------------------
+Parameters: property (constant), amount (number)
+Increments a property of all notes in a pattern.
+-----------------------------------------------------------------------------]]
+function increment_note_property_all_notes(property, amount)
+  local song = renoise.song()
+  local notes = get_notes_in_pattern()
+
+  if notes == nil then
+    return
+  end
+
+  local note_index = song.selected_note_column_index
+  for i, line_num in ipairs(notes) do
+    local note = song.selected_pattern_track:line(line_num).note_columns[note_index]
+    increment_note_property(property, amount, note)
+  end
+end
+
+
+--[[ INCREMENT MULTIPLE NOTES BY SUBDIVISION-----------------------------------------
 Parameters: property (constant), subdivision (constant), amount (number)
 Increments a property of multiple notes based on a specified subdivision.
 -----------------------------------------------------------------------------]]
-function inc_note_property_multiple(property, subdivision, amount)
+function increment_groove(subdivision, amount)
   local song = renoise.song()
   local max_lines = song.selected_pattern.number_of_lines
   local multipler = 1
@@ -100,11 +121,102 @@ function inc_note_property_multiple(property, subdivision, amount)
   local interval = multipler * math.floor(song.transport.lpb / 4)
   local start_point = math.floor(song.transport.lpb / 4) + start_point_modifier
 
+  local note_index = song.selected_note_column_index or 1
   for i = start_point, max_lines, interval do
-    local note_col = song.selected_pattern_track:line(i).note_columns[1]
+    local note_col = song.selected_pattern_track:line(i).note_columns[note_index]
     if note_col then
-      increment_note_property(property, amount, note_col)
+      increment_note_property(DELAY, amount, note_col)
     end
+  end
+end
+
+
+--[[ RANDOMIZE GROOVE BY SUBDIVISION -----------------------------------------
+Parameters: subdivision (constant), amount (number)
+Randomizes groove by a specified subdivision.
+-----------------------------------------------------------------------------]]
+function randomize_groove(subdivision, amount)
+  local song = renoise.song()
+  local max_lines = song.selected_pattern.number_of_lines
+  local multipler = 1
+  local start_point_modifier = 1
+
+  if subdivision == EIGHTH then
+    multipler = 2
+  elseif subdivision == SIXTEENTH then
+    multipler = 1
+    start_point_modifier = 0
+  else
+    error("Invalid subdivision")
+  end
+
+  local interval = multipler * math.floor(song.transport.lpb / 4)
+  local start_point = math.floor(song.transport.lpb / 4) + start_point_modifier
+  local note_index = song.selected_note_column_index or 1
+
+  for i = start_point, max_lines, interval do
+    local note_col = song.selected_pattern_track:line(i).note_columns[note_index]
+    if note_col then
+      randomize_note_property(DELAY, amount, note_col)
+    end
+  end
+end
+
+
+--[[ RANDOMIZE PROPERTY -------------------------------------------------------
+Parameters: property (constant), amount (number), note_col (NoteColumn object) (optional)
+Randomizes a property of a note (DELAY, VOL, PAN) by a given amount, plus or minus.
+-----------------------------------------------------------------------------]]
+function randomize_note_property(property, amount, note_col)
+  local note_col = note_col or renoise.song().selected_note_column
+
+  if note_col == nil then
+    return
+  end
+
+  local range = 256
+  local value = 0
+
+  if property == DELAY then
+    value = note_col.delay_value
+  elseif property == VOL then
+    value = note_col.volume_value
+  elseif property == PAN then
+    value = note_col.panning_value
+    range = 128
+  else
+    error("Invalid property")
+    return
+  end
+
+  value = randomize(value, amount, range)
+
+  if property == DELAY then
+    note_col.delay_value = value
+  elseif property == VOL then
+    note_col.volume_value = value
+  elseif property == PAN then
+    note_col.panning_value = value
+  end
+end
+
+
+--[[ RANDOMIZE PROPERTY ALL NOTES ---------------------------------------------
+Parameters: property (constant), amount (number)
+Randomizes a property of all notes in a pattern.
+-----------------------------------------------------------------------------]]
+function randomize_note_property_all_notes(property, amount)
+  local song = renoise.song()
+  local notes = get_notes_in_pattern()
+
+  if notes == nil then
+    return
+  end
+
+  local note_index = song.selected_note_column_index
+  for i, line_num in ipairs(notes) do
+    local note = song.selected_pattern_track:line(line_num).note_columns[note_index]
+    randomize_note_property(property, amount, note)
   end
 end
 
@@ -280,11 +392,26 @@ Parameters: value (number), amount (number), range (number)
 Helper function to handle the increment of values.
 -----------------------------------------------------------------------------]]
 function increment(value, amount, range)
-  -- Error if range is not 16 or 256
-  if range ~= 16 and range ~= 256 then
-    error("Range must be 16 or 256")
+
+  if range ~= 16 and range ~= 128 and range ~= 256 then
+    error("Range must be 16 or 128 or 256")
   end
   return (value + amount) % range
+end
+
+
+--[[ RANDOMIZE HELPER ---------------------------------------------------------
+Parameters: initial_value (number), amount (number), range (number)
+Takes an initial value and randomizes it by a given amount within a given range.
+-----------------------------------------------------------------------------]]
+function randomize(initial_value, amount, range)
+  local value = initial_value + math.random(-amount, amount)
+  if value < 0 then
+    value = 0
+  elseif value > range then
+    value = range
+  end
+  return value
 end
 
 

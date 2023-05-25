@@ -192,12 +192,12 @@ renoise.tool():add_keybinding {
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Delete entire track",
-  invoke = function() delete_entire_track() end
+  invoke = function() delete_column_lines() end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Delete entire column",
-  invoke = function() delete_entire_column() end
+  invoke = function() delete_column_columns() end
 }
 
 ------------------------------------------------------------------------
@@ -244,43 +244,214 @@ renoise.tool():add_keybinding {
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment note delay 10%",
+  name = "Pattern Editor:Insert/Delete:Increment note delay (1)",
   invoke = function() increment_note_property(DELAY, 16) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement note delay 10%",
+  name = "Pattern Editor:Insert/Delete:Decrement note delay (-1)",
   invoke = function() increment_note_property(DELAY, -16) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment note delay 25%",
+  name = "Pattern Editor:Insert/Delete:Increment note delay (16)",
+  invoke = function() increment_note_property(DELAY, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement note delay (-16)",
+  invoke = function() increment_note_property(DELAY, -16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment note delay (64)",
   invoke = function() increment_note_property(DELAY, 64) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement note delay 25%",
+  name = "Pattern Editor:Insert/Delete:Decrement note delay (-64)",
   invoke = function() increment_note_property(DELAY, -64) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment delay all eighth notes 10%",
-  invoke = function() inc_note_property_multiple(DELAY, EIGHTH, 16) end
+  name = "Pattern Editor:Insert/Delete:Increment delay all 8th notes (1)",
+  invoke = function() increment_groove(EIGHTH, 1) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement delay all eighth notes 10%",
-  invoke = function() inc_note_property_multiple(DELAY, EIGHTH, -16) end
+  name = "Pattern Editor:Insert/Delete:Decrement delay all 8th notes (-1)",
+  invoke = function() increment_groove(EIGHTH, -1) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment delay all sixteenth notes 10%",
-  invoke = function() inc_note_property_multiple(DELAY, SIXTEENTH, 16) end
+  name = "Pattern Editor:Insert/Delete:Increment delay all 8th notes (16)",
+  invoke = function() increment_groove(EIGHTH, 16) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement delay all sixteenth notes 10%",
-  invoke = function() inc_note_property_multiple(DELAY, SIXTEENTH, -16) end
+  name = "Pattern Editor:Insert/Delete:Decrement delay all 8th notes (-16)",
+  invoke = function() increment_groove(EIGHTH, -16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment delay all 16th notes (1)",
+  invoke = function() increment_groove(SIXTEENTH, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement delay all 16th notes (-1)",
+  invoke = function() increment_groove(SIXTEENTH, -1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment delay all 16th notes (16)",
+  invoke = function() increment_groove(SIXTEENTH, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement delay all 16th notes (-16)",
+  invoke = function() increment_groove(SIXTEENTH, -16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment pan all notes (1)",
+  invoke = function() increment_note_property_all_notes(PAN, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement pan all notes (-1)",
+  invoke = function() increment_note_property_all_notes(PAN, -1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment pan all notes (8)",
+  invoke = function() increment_note_property_all_notes(PAN, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement pan all notes (-8)",
+  invoke = function() increment_note_property_all_notes(PAN, -8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume +8/-8",
+  invoke = function() randomize_note_property(VOL, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume +16/-16",
+  invoke = function() randomize_note_property(VOL, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume +32/-32",
+  invoke = function() randomize_note_property(VOL, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan +8/-8",
+  invoke = function() randomize_note_property(PAN, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan +16/-16",
+  invoke = function() randomize_note_property(PAN, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan +32/-32",
+  invoke = function() randomize_note_property(PAN, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize delay +8/-8",
+  invoke = function() randomize_note_property(DELAY, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize delay +16/-16",
+  invoke = function() randomize_note_property(DELAY, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize delay +32/-32",
+  invoke = function() randomize_note_property(DELAY, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume all notes +8/-8",
+  invoke = function() randomize_note_property_all_notes(VOL, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume all notes +16/-16",
+  invoke = function() randomize_note_property_all_notes(VOL, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume all notes +32/-32",
+  invoke = function() randomize_note_property_all_notes(VOL, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan all notes +8/-8",
+  invoke = function() randomize_note_property_all_notes(PAN, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan all notes +16/-16",
+  invoke = function() randomize_note_property_all_notes(PAN, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan all notes +32/-32",
+  invoke = function() randomize_note_property_all_notes(PAN, 32) end
+}
+
+-- randomize groove all notes
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize groove all notes +8/-8",
+  invoke = function() randomize_note_property_all_notes(DELAY, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize groove all notes +16/-16",
+  invoke = function() randomize_note_property_all_notes(DELAY, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize groove all notes +32/-32",
+  invoke = function() randomize_note_property_all_notes(DELAY, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize groove 8th notes +8/-8",
+  invoke = function() randomize_groove(EIGHTH, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize groove 8th notes +16/-16",
+  invoke = function() randomize_groove(EIGHTH, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize groove 8th notes +32/-32",
+  invoke = function() randomize_groove(EIGHTH, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize groove 16th notes +8/-8",
+  invoke = function() randomize_groove(SIXTEENTH, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize groove 16th notes +16/-16",
+  invoke = function() randomize_groove(SIXTEENTH, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize groove 16th notes +32/-32",
+  invoke = function() randomize_groove(SIXTEENTH, 32) end
 }
 
 renoise.tool():add_keybinding {
