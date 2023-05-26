@@ -18,17 +18,17 @@ NOTE_ONLY = 5
 -- Default edit mode
 EDIT_MODE = COLUMN
 
--- Note parameters 
+-- Note column properties 
 NOTE = 1
 VOL = 2
 PAN = 3
 DELAY = 4
 FX = 5
+DEFAULT_NOTE_PROPERTY = VOL
 
 -- Subdivisions
 EIGHTH = 1
 SIXTEENTH = 2
-ALL_NOTES = 3
 
 -- FX parameters
 X = "x"
@@ -43,7 +43,7 @@ FX5 = 5
 FX6 = 6
 FX7 = 7
 FX8 = 8
-SELECTED_FX_COLUMN = 1
+DEFAULT_FX_COLUMN = 1
 
 -- General FX Types
 ARPEGGIO = 1

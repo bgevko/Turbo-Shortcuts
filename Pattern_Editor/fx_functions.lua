@@ -11,7 +11,7 @@ Parameters: type (constant), col (EffectsColumn object)
 Sets an effect to a column based on the provided type.
 -----------------------------------------------------------------------------]]
 function set_effect(type, col)
-  local col = col or renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
+  local col = col or renoise.song().selected_line.effect_columns[DEFAULT_FX_COLUMN]
   local note_col = renoise.song().selected_note_column
   local effect_string = ''
 
@@ -37,12 +37,13 @@ function set_effect(type, col)
     error("Invalid effect type")
     return
   end
-  show_status_message(effect_string .." set to col " .. SELECTED_FX_COLUMN .. ".")
+  show_status_message(effect_string .." set to col " .. DEFAULT_FX_COLUMN .. ".")
 end
 
 
 --[[ INCREMENT NOTE PROPERTY --------------------------------------------------
-Parameters: property (constant), amount (number), note_col (NoteColumn object)
+Parameters: property (constant), amount (number), note_col (NoteColumn object) (optional)
+All multi-note increments use this function.
 Increments a property of a note (DELAY, VOL, PAN).
 -----------------------------------------------------------------------------]]
 function increment_note_property(property, amount, note_col)
@@ -234,7 +235,7 @@ function set_effect_all_notes(type)
   end
 
   for i = 1, #note_positions do
-    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[DEFAULT_FX_COLUMN]
     if col then
       set_effect(type, col)
     end
@@ -255,7 +256,7 @@ function set_effect_all_notes_in_loop_block(type)
   end
 
   for i = 1, #note_positions do
-    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[DEFAULT_FX_COLUMN]
     if col then
       set_effect(type, col)
     end
@@ -263,37 +264,148 @@ function set_effect_all_notes_in_loop_block(type)
 end
 
 
---[[ DUAL INCREMENT FX --------------------------------------------------------
-Parameters: side (constant), amount (number), col (EffectsColumn object)
-Increments the value of either xx-- or --yy side of a dual-sided effect.
+--[[INCREMENT LEFT OR RIGHT DIGIT OF EFFECT (4-BIT)  ---------------------------
+  Parameters: digit (X or Y constants), amount (number), col (EffectsColumn object)
+  Increments the left or the right digit of an effects value.
+  Usage:
+  A5C -> inc_4bit_hex_fx(X, 1) -> A6C
+  A6C -> inc_4bit_hex_fx(Y, 1) -> A6D
 -----------------------------------------------------------------------------]]
-function dual_increment_fx(side, amount, col)
-  local range = 16 -- 16 because 0-F
-  col = col or renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN]
+function inc_4bit_hex_fx(digit, amount, col)
+  local range = 16 -- 0-F
+  local selected_fx_index = renoise.song().selected_effect_column_index or DEFAULT_FX_COLUMN
+  col = col or renoise.song().selected_line.effect_columns[selected_fx_index]
+
   if col.number_value == 0 then
     return
   end
-  if side == X then
+
+  if digit == X then
     local x = bit.band(bit.rshift(col.amount_value, 4), 0xF)
     x = increment(x, amount, range)
     col.amount_value = bit.bor(bit.band(col.amount_value, 0xF), bit.lshift(x, 4))
-  elseif side == Y then
+  elseif digit == Y then
     local y = bit.band(col.amount_value, 0xF)
     y = increment(y, amount, range)
     col.amount_value = bit.bor(bit.band(col.amount_value, bit.lshift(0xF, 4)), y)
   else
-    error("Invalid side, must be X or Y")
+    error("Invalid digit")
   end
 end
 
 
---[[ SINGLE INCREMENT FX ------------------------------------------------------
-Parameters: amount (number), col (EffectsColumn object)
-Increments the value of a single-sided effect.
+--[[INCREMENT LEFT OR RIGHT DIGIT OF A NOTE PROPERTY (4-BIT)  ----------------
+  Parameters: digit (X or Y constants), amount (number), col (NoteColumn object)
+  Increments the left or the right digit of a note property (VOL, PAN, or DELAY)
+  This function will increment the following items, ordered by priority:
+    1. Non-empty note property (VOL, PAN, or DELAY)
+    2. If more than one is non-empty, DEFAULT_NOTE_PROPERTY will be incremented
+    3. If all properties are empty, DEFAULT_NOTE_PROPERTY will be incremented
+  Usage:
+    Usage examples:
+    Line    Note   VOL   PAN   DELAY
+    1       C-300  --    40    --
+    2       C-300  20    --    --
+    3       C-300  20    40    10
+    4       C-300  --    --    --
+
+    (Selection on line 1) inc_4bit_note_property(X, 1) -> Line 1, PAN = 50
+    (Selection on line 1) inc_4bit_note_property(Y, 1) -> Line 1, PAN = 51
+    
+    (Selection on line 2) inc_4bit_note_property(X, 1) -> Line 2, VOL = 30
+    (Selection on line 2) inc_4bit_note_property(Y, 1) -> Line 2, VOL = 31
+
+    (Selection on line 3) inc_4bit_note_property(X, 1) -> Line 3, VOL = 30 (VOL is default note property)
+    (Selection on line 3) inc_4bit_note_property(Y, 1) -> Line 3, VOL = 31 (VOL is default note property)
+
+    (Selection on line 4) inc_4bit_note_property(X, 1) -> Line 4, VOL = 30 (VOL is default note property)
+    (Selection on line 4) inc_4bit_note_property(Y, 1) -> Line 4, VOL = 31 (VOL is default note property)
 -----------------------------------------------------------------------------]]
-function single_increment_fx(amount, col)
+function inc_4bit_note_property(digit, amount, col)
+  local range = 16 -- 0-F
+  local note_column_index = renoise.song().selected_note_column_index or 1
+  col = col or renoise.song().selected_line.note_columns[note_column_index]
+
+  local priority = get_vol_pan_delay_priority(col)
+  local x
+  local y
+
+  -- Set x and y to the value based on priority
+  if priority == VOL then
+    x = bit.band(bit.rshift(col.volume_value, 4), 0xF)
+    y = bit.band(col.volume_value, 0xF)
+  elseif priority == PAN then
+    x = bit.band(bit.rshift(col.panning_value, 4), 0xF)
+    y = bit.band(col.panning_value, 0xF)
+  elseif priority == DELAY then
+    x = bit.band(bit.rshift(col.delay_value, 4), 0xF)
+    y = bit.band(col.delay_value, 0xF)
+  else
+    error("Invalid priority")
+  end
+
+  -- Increment x or y
+  if digit == X then
+    x = increment(x, amount, range)
+  elseif digit == Y then
+    y = increment(y, amount, range)
+  else
+    error("Invalid digit")
+  end
+
+  -- Set the value based on priority
+  if priority == VOL then
+    col.volume_value = bit.bor(bit.band(col.volume_value, 0xF), bit.lshift(x, 4))
+    col.volume_value = bit.bor(bit.band(col.volume_value, bit.lshift(0xF, 4)), y)
+  elseif priority == PAN then
+    col.panning_value = bit.bor(bit.band(col.panning_value, 0xF), bit.lshift(x, 4))
+    col.panning_value = bit.bor(bit.band(col.panning_value, bit.lshift(0xF, 4)), y)
+  elseif priority == DELAY then
+    col.delay_value = bit.bor(bit.band(col.delay_value, 0xF), bit.lshift(x, 4))
+    col.delay_value = bit.bor(bit.band(col.delay_value, bit.lshift(0xF, 4)), y)
+  else
+    error("Invalid priority")
+  end
+end
+
+
+--[[ GET VOL PAN OR DELAY PRIORITY --------------------------------------------
+  Parameters: col (NoteColumn object)
+  This is a helper function for inc_4bit_note_property. It returns a property
+    if it is the only non-emptry property for the selected note column, otherwise
+    it returns DEFAULT_NOTE_PROPERTY.
+  ---------------------------------------------------------------------------]]
+function get_vol_pan_delay_priority(col)
+  if col == nil then
+    return
+  end
+
+  local vol = col.volume_string
+  local pan = col.panning_string
+  local delay = col.delay_string
+
+  if vol ~= ".." and pan == ".." and delay == ".." then
+    return VOL
+  elseif vol == ".." and pan ~= ".." and delay == ".." then
+    return PAN
+  elseif vol == ".." and pan == ".." and delay ~= ".." then
+    return DELAY
+  else
+    return DEFAULT_NOTE_PROPERTY
+  end
+end
+
+--[[ INCREMENT EFFECT CHRONOLOGICALLY (8-BIT) ---------------------------------
+Parameters: amount (number), col (EffectsColumn object) (optional)
+Increments effects hex value chronologically.
+  Usage:
+  A5C -> inc_8bit_hex_fx(1)  -> A5D
+  A5D -> inc_8bit_hex_fx(-1) -> A6C
+-----------------------------------------------------------------------------]]
+function inc_8bit_hex_fx(amount, col)
   local range = 256 -- 256 because 00-FF
-  col = col or renoise.song().selected_line.effect_columns[SELECTED_FX_COLUMN] 
+  local selected_fx_index = renoise.song().selected_effect_column_index or DEFAULT_FX_COLUMN
+  col = col or renoise.song().selected_line.effect_columns[selected_fx_index] 
   if col.number_value == 0 then
     return
   end
@@ -303,11 +415,13 @@ function single_increment_fx(amount, col)
 end
 
 
---[[ DUAL INCREMENT FX ALL NOTES ----------------------------------------------
+--[[ INCREMENT 4-BIT EFFECTS FOR ALL NOTES -----------------------------------
 Parameters: side (constant), amount (number)
-Applies a dual increment effect to all notes in a pattern.
+Increments the left or the right digit of an effects value, for all notes in a pattern.
+  Usage:
+  A5C -> inc_4bit_fx_all_notes(X, 1) -> A6C (for all notes in pattern)
 -----------------------------------------------------------------------------]]
-function dual_increment_fx_all_notes(side, amount)
+function inc_4bit_fx_all_notes(side, amount)
   local song = renoise.song()
   local note_positions = get_notes_in_pattern()
 
@@ -316,19 +430,22 @@ function dual_increment_fx_all_notes(side, amount)
   end
 
   for i = 1, #note_positions do
-    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[DEFAULT_FX_COLUMN]
     if col then
-      dual_increment_fx(side, amount, col)
+      inc_4bit_hex_fx(side, amount, col)
     end
   end
 end
 
 
---[[ SINGLE INCREMENT FX ALL NOTES --------------------------------------------
+--[[ INCREMENT 8-BIT EFFECTS FOR ALL NOTES -----------------------------------
 Parameters: amount (number)
-Applies a single increment effect to all notes in a pattern.
+Increments effects hex value chronologically, for all notes in a pattern.
+  Usage:
+  A5C -> inc_8bit_fx_all_notes(1)  -> A5D (for all notes in pattern)
+  A5D -> inc_8bit_fx_all_notes(-1) -> A6C (for all notes in pattern)
 -----------------------------------------------------------------------------]]
-function single_increment_fx_all_notes(amount)
+function inc_8bit_fx_all_notes(amount)
   local song = renoise.song()
   local note_positions = get_notes_in_pattern()
 
@@ -337,19 +454,22 @@ function single_increment_fx_all_notes(amount)
   end
 
   for i = 1, #note_positions do
-    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[DEFAULT_FX_COLUMN]
     if col then
-      single_increment_fx(amount, col)
+      inc_8bit_hex_fx(amount, col)
     end
   end
 end
 
 
---[[ DUAL INCREMENT FX IN LOOP ------------------------------------------------
+--[[ INCREMENT 4-BIT EFFECTS FOR ALL NOTES IN LOOP ---------------------------
 Parameters: side (constant), amount (number)
-Applies a dual increment effect to all notes within a loop block in a pattern.
+Increments the left or the right digit of an effects value, for all notes 
+within a loop block in a pattern.
+  Usage:
+  A5C -> inc_4bit_fx_loop(X, 1) -> A6C (for all notes in loop)
 -----------------------------------------------------------------------------]]
-function dual_increment_fx_in_loop(side, amount)
+function inc_4bit_fx_loop(side, amount)
   local song = renoise.song()
   local note_positions = get_notes_in_loop_block()
 
@@ -358,19 +478,23 @@ function dual_increment_fx_in_loop(side, amount)
   end
 
   for i = 1, #note_positions do
-    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[DEFAULT_FX_COLUMN]
     if col then
-      dual_increment_fx(side, amount, col)
+      inc_4bit_hex_fx(side, amount, col)
     end
   end
 end
 
 
---[[ SINGLE INCREMENT FX IN LOOP ----------------------------------------------
+--[[ INCREMENT 8-BIT EFFECTS FOR ALL NOTES IN LOOP ---------------------------
 Parameters: amount (number)
-Applies a single increment effect to all notes within a loop block in a pattern.
+Increments effects hex value chronologically, for all notes within a loop block
+in a pattern.
+  Usage:
+  A5C -> inc_8bit_fx_all_notes_in_loop(1)  -> A5D (for all notes in loop)
+  A5D -> inc_8bit_fx_all_notes_in_loop(-1) -> A6C (for all notes in loop)
 -----------------------------------------------------------------------------]]
-function single_increment_fx_in_loop(amount)
+function inc_8bit_fx_loop(amount)
   local song = renoise.song()
   local note_positions = get_notes_in_loop_block()
 
@@ -379,9 +503,9 @@ function single_increment_fx_in_loop(amount)
   end
 
   for i = 1, #note_positions do
-    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[SELECTED_FX_COLUMN]
+    local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[DEFAULT_FX_COLUMN]
     if col then
-      single_increment_fx(amount, col)
+      inc_8bit_hex_fx(amount, col)
     end
   end
 end
@@ -421,24 +545,24 @@ Sets the selected FX column for edits.
 -----------------------------------------------------------------------------]]
 function set_fx_column(column)
   if column == FX1 then
-    SELECTED_FX_COLUMN = FX1
+    DEFAULT_FX_COLUMN = FX1
   elseif column == FX2 then
-    SELECTED_FX_COLUMN = FX2
+    DEFAULT_FX_COLUMN = FX2
   elseif column == FX3 then
-    SELECTED_FX_COLUMN = FX3
+    DEFAULT_FX_COLUMN = FX3
   elseif column == FX4 then
-    SELECTED_FX_COLUMN = FX4
+    DEFAULT_FX_COLUMN = FX4
   elseif column == FX5 then
-    SELECTED_FX_COLUMN = FX5
+    DEFAULT_FX_COLUMN = FX5
   elseif column == FX6 then
-    SELECTED_FX_COLUMN = FX6
+    DEFAULT_FX_COLUMN = FX6
   elseif column == FX7 then
-    SELECTED_FX_COLUMN = FX7
+    DEFAULT_FX_COLUMN = FX7
   elseif column == FX8 then
-    SELECTED_FX_COLUMN = FX8
+    DEFAULT_FX_COLUMN = FX8
   else
     error("Column must be FX1, FX2, FX3, FX3, FX4, FX5, FX6, FX7, or FX8")
     return
   end
-  show_status_message("Selected FX column for edits: " .. SELECTED_FX_COLUMN)
+  show_status_message("Selected FX column for edits: " .. DEFAULT_FX_COLUMN)
 end
