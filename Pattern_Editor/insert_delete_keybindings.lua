@@ -54,13 +54,13 @@ renoise.tool():add_keybinding {
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Copy vol, pan, delay and move down",
-  invoke = function() copy_vol_pan_delay(DOWN) end
+  name = "Pattern Editor:Insert/Delete:Copy note properties and move down",
+  invoke = function() copy_note_properties(DOWN) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Copy vol, pan, delay and move up",
-  invoke = function() copy_vol_pan_delay(UP) end
+  name = "Pattern Editor:Insert/Delete:Copy note properties and move up",
+  invoke = function() copy_note_properties(UP) end
 }
 
 renoise.tool():add_keybinding {
@@ -156,13 +156,13 @@ renoise.tool():add_keybinding {
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Edit Mode to volume, pan, delay only",
-  invoke = function() set_edit_mode(VOL_PAN_DELAY) end
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to note properties",
+  invoke = function() set_edit_mode(NOTE_PROPERTIES) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set Edit Mode to delete all but note data",
-  invoke = function() set_edit_mode(EFFECTS) end
+  invoke = function() set_edit_mode(ALL_BUT_NOTE) end
 }
 
 renoise.tool():add_keybinding {

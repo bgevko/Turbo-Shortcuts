@@ -17,11 +17,12 @@ function multi_purpose_delete(mode)
     delete_line()
   elseif (mode == COLUMN) then
     delete_selected_column()
-  elseif (mode == VOL_PAN_DELAY) then
-    delete_vol_pan_delay()
-  elseif (mode == EFFECTS) then
-    delete_vol_pan_delay()
+  elseif (mode == NOTE_PROPERTIES) then
+    delete_note_properties()
+  elseif (mode == ALL_BUT_NOTE) then
+    delete_note_properties()
     delete_fx_column_data()
+    delete_note_fx()
   elseif (mode == NOTE_ONLY) then
     delete_single_selected(NOTE)
   end
@@ -38,10 +39,11 @@ function multi_purpose_column_delete(mode)
     delete_column_lines()
   elseif (mode == COLUMN) then
     delete_column_columns()
-  elseif (mode == VOL_PAN_DELAY) then
-    delete_column_vol_pan_delay()
-  elseif (mode == EFFECTS) then
+  elseif (mode == NOTE_PROPERTIES) then
+    delete_column_note_properties()
+  elseif (mode == ALL_BUT_NOTE) then
     delete_column_effects()
+    delete_column_note_properties()
   elseif (mode == NOTE_ONLY) then
     delete_column_note_only()
   end
@@ -57,13 +59,22 @@ function delete_line()
 end
 
 
---[[ DELETE VOL PAN DELAY ------------------------------------------------------
-  Deletes the currently selected volume, panning, and delay values in the pattern editor.
+--[[ DELETE VOL PAN DELAY AND NOTE FX -------------------------------------------
+  Deletes the currently selected volume, panning, delay and note fx values in the pattern editor.
 --------------------------------------------------------------------------------]]
-function delete_vol_pan_delay()
+function delete_note_properties()
   delete_single_selected(VOL)
   delete_single_selected(PAN)
   delete_single_selected(DELAY)
+  delete_single_selected(NOTE_FX)
+end
+
+
+--[[ DELETE NOTE EFFECTS ------------------------------------------------------
+  Deletes the currently selected note effects in the pattern editor.
+  --------------------------------------------------------------------------------]]
+function delete_note_fx()
+  delete_single_selected(NOTE_FX)
 end
 
 
@@ -82,22 +93,17 @@ function delete_single_selected(parameter, note_column)
   end
 
   if parameter == NOTE then
-    selection.note_value = 121
     selection.note_string = '---'
-    selection.instrument_value = 255
     selection.instrument_string = '..'
   elseif parameter == VOL then
-    selection.volume_value = 0
     selection.volume_string = '..'
   elseif parameter == PAN then
-    selection.panning_value = 0
     selection.panning_string = '..'
   elseif parameter == DELAY then
-    selection.delay_value = 0
     selection.delay_string = '..'
-  elseif parameter == FX then
-    selection.effect_value = 0
-    selection.effect_string = '..'
+  elseif parameter == NOTE_FX then
+    selection.effect_number_string = '..'
+    selection.effect_amount_string = '..'
   end
 
 end
@@ -172,21 +178,23 @@ function delete_column_columns()
 end
 
 
---[[ DELETE VOL PAN DELAY (VERTICALLY)
-  If you're in note column mode, this will delete all volume, panning, and delay
-  values from the current line down.
+--[[ DELETE VOL PAN DELAY and FX (VERTICALLY)
+  If you're in note column mode, this will delete all volume, panning, delay
+  and note effects values from the current line down.
 --------------------------------------------------------------------------------]]
-function delete_column_vol_pan_delay()
+function delete_column_note_properties()
   local song = renoise.song()
   local note_column_index = song.selected_note_column_index
-
-  if (note_column_index ~= 0) then
-    for i = 1, song.selected_pattern.number_of_lines do
-      current_column = song.selected_pattern_track:line(i).note_columns[note_column_index]
-      delete_single_selected(VOL, current_column)
-      delete_single_selected(PAN, current_column)
-      delete_single_selected(DELAY, current_column)
-    end
+  if note_column_index == 0 then
+    -- if no note column is selected, use the first one
+    note_column_index = 1
+  end
+  for i = 1, song.selected_pattern.number_of_lines do
+    local current_column = song.selected_pattern_track:line(i).note_columns[note_column_index]
+    delete_single_selected(VOL, current_column)
+    delete_single_selected(PAN, current_column)
+    delete_single_selected(DELAY, current_column)
+    delete_single_selected(NOTE_FX, current_column)
   end
 end
 
@@ -198,12 +206,14 @@ end
 function delete_column_note_only()
   local song = renoise.song()
   local note_column_index = song.selected_note_column_index
-
-  if (note_column_index ~= 0) then
-    for i = 1, song.selected_pattern.number_of_lines do
-      local current_column = song.selected_pattern_track:line(i).note_columns[note_column_index]
-      delete_single_selected(NOTE, current_column)
-    end
+  if note_column_index == 0 then
+    -- if no note column is selected, use the first one
+    note_column_index = 1
+  end
+  
+  for i = 1, song.selected_pattern.number_of_lines do
+    local current_column = song.selected_pattern_track:line(i).note_columns[note_column_index]
+    delete_single_selected(NOTE, current_column)
   end
 end
 
@@ -233,9 +243,9 @@ function set_edit_mode(mode)
     show_status_message("Edit mode set to Line")
   elseif mode == COLUMN then
     show_status_message("Edit mode set to column")
-  elseif mode == VOL_PAN_DELAY then
-    show_status_message("Edit mode set to Volume, Pan, Delay")
-  elseif mode == EFFECTS then
+  elseif mode == NOTE_PROPERTIES then
+    show_status_message("Edit mode set to note properties")
+  elseif mode == ALL_BUT_NOTE then
     show_status_message("Edit mode set to All but Note")
   elseif mode == NOTE_ONLY then
     show_status_message("Edit mode set to Note Only")

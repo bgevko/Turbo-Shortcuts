@@ -70,9 +70,9 @@ function multi_purpose_copy(mode, direction)
     copy_line(direction)
   elseif mode == COLUMN then
     copy_column(direction)
-  elseif mode == VOL_PAN_DELAY then
-    copy_vol_pan_delay(direction)
-  elseif mode == EFFECTS then
+  elseif mode == NOTE_PROPERTIES then
+    copy_note_properties(direction)
+  elseif mode == ALL_BUT_NOTE then
     copy_effects(direction)
   elseif mode == NOTE_ONLY then
     copy_note_only(direction)
@@ -139,7 +139,7 @@ end
   must be over a note column
   @param direction: UP or DOWN
   -------------------------------------------------------------------------------------]]
-function copy_vol_pan_delay(direction)
+function copy_note_properties(direction)
   local song = renoise.song()
   local selected_line_index = song.selected_line_index
   local selection = song.selected_note_column

@@ -11,8 +11,8 @@ JUMP_MAX = 64
 -- Edit modes
 LINE = 1
 COLUMN = 2
-VOL_PAN_DELAY = 3
-EFFECTS = 4
+NOTE_PROPERTIES = 3
+ALL_BUT_NOTE = 4
 NOTE_ONLY = 5
 
 -- Default edit mode
@@ -23,7 +23,7 @@ NOTE = 1
 VOL = 2
 PAN = 3
 DELAY = 4
-FX = 5
+NOTE_FX = 5
 DEFAULT_NOTE_PROPERTY = VOL
 
 -- Subdivisions
