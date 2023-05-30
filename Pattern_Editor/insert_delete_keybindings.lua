@@ -65,12 +65,12 @@ renoise.tool():add_keybinding {
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Copy effect column and move down",
-  invoke = function() copy_effects(DOWN) end
+  invoke = function() copy_all_but_note(DOWN) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Copy effect column and move up",
-  invoke = function() copy_effects(UP) end
+  invoke = function() copy_all_but_note(UP) end
 }
 
 renoise.tool():add_keybinding {
@@ -81,6 +81,16 @@ renoise.tool():add_keybinding {
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Copy note and move up",
   invoke = function() copy_note_only(UP) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Copy effect only and move down",
+  invoke = function() copy_effects_only(DOWN) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Copy effect only and move up",
+  invoke = function() copy_effects_only(UP) end
 }
 
 renoise.tool():add_keybinding {
@@ -146,28 +156,33 @@ renoise.tool():add_keybinding {
   invoke = function() multi_purpose_column_delete(EDIT_MODE) end
 }
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Edit Mode to Line",
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to LINE",
   invoke = function() set_edit_mode(LINE) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Edit Mode to Full note or FX",
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to SELECTED COLUMN",
   invoke = function() set_edit_mode(COLUMN) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Edit Mode to note properties",
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to NOTE PROPERTIES",
   invoke = function() set_edit_mode(NOTE_PROPERTIES) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Edit Mode to delete all but note data",
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to ALL BUT NOTE",
   invoke = function() set_edit_mode(ALL_BUT_NOTE) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set Edit Mode to delete note only",
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to NOTE ONLY",
   invoke = function() set_edit_mode(NOTE_ONLY) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Set Edit Mode to EFFECTS ONLY",
+  invoke = function() set_edit_mode(EFFECTS_ONLY) end
 }
 
 renoise.tool():add_keybinding {

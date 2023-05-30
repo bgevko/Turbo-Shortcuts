@@ -24,7 +24,9 @@ function multi_purpose_delete(mode)
     delete_fx_column_data()
     delete_note_fx()
   elseif (mode == NOTE_ONLY) then
-    delete_single_selected(NOTE)
+    delete_note_only()
+  elseif (mode == EFFECTS_ONLY) then
+    delete_fx_column_data()
   end
 end
 
@@ -46,6 +48,8 @@ function multi_purpose_column_delete(mode)
     delete_column_note_properties()
   elseif (mode == NOTE_ONLY) then
     delete_column_note_only()
+  elseif (mode == EFFECTS_ONLY) then
+    delete_column_effects()
   end
 end
 
@@ -60,21 +64,41 @@ end
 
 
 --[[ DELETE VOL PAN DELAY AND NOTE FX -------------------------------------------
-  Deletes the currently selected volume, panning, delay and note fx values in the pattern editor.
+  Deletes the current line volume, panning, delay and note fx values in the pattern editor.
 --------------------------------------------------------------------------------]]
 function delete_note_properties()
-  delete_single_selected(VOL)
-  delete_single_selected(PAN)
-  delete_single_selected(DELAY)
-  delete_single_selected(NOTE_FX)
+  local song = renoise.song()
+  for i = 1, 12 do
+    local note_column = song.selected_line.note_columns[i]
+    delete_single_selected(VOL, note_column)
+    delete_single_selected(PAN, note_column)
+    delete_single_selected(DELAY, note_column)
+    delete_single_selected(NOTE_FX, note_column)
+  end
 end
 
 
 --[[ DELETE NOTE EFFECTS ------------------------------------------------------
-  Deletes the currently selected note effects in the pattern editor.
+  Deletes the currently line note effects in the pattern editor.
   --------------------------------------------------------------------------------]]
 function delete_note_fx()
-  delete_single_selected(NOTE_FX)
+  local song = renoise.song()
+  for i = 1, 12 do
+    local note_column = song.selected_line.note_columns[i]
+    delete_single_selected(NOTE_FX, note_column)
+  end
+end
+
+
+--[[ DELETE NOTE ONLY ------------------------------------------------------
+  Deletes the current line notes in the pattern editor.
+  --------------------------------------------------------------------------------]]
+function delete_note_only()
+  local song = renoise.song()
+  for i = 1, 12 do
+    local note_column = song.selected_line.note_columns[i]
+    delete_single_selected(NOTE, note_column)
+  end
 end
 
 
@@ -224,10 +248,9 @@ end
 --------------------------------------------------------------------------------]]
 function delete_column_effects()
   local song = renoise.song()
-  local effect_column_index = song.selected_effect_column_index
 
-  if (effect_column_index ~= 0) then
-    for i = 1, song.selected_pattern.number_of_lines do
+  for i = 1, song.selected_pattern.number_of_lines do
+    for effect_column_index = 1, 8 do
       song.selected_pattern_track:line(i).effect_columns[effect_column_index]:clear()
     end
   end
@@ -240,14 +263,18 @@ end
 function set_edit_mode(mode) 
   EDIT_MODE = mode
   if mode == LINE then
-    show_status_message("Edit mode set to Line")
+    show_status_message("Edit mode set to LINE")
   elseif mode == COLUMN then
-    show_status_message("Edit mode set to column")
+    show_status_message("Edit mode set to COLUMN")
   elseif mode == NOTE_PROPERTIES then
-    show_status_message("Edit mode set to note properties")
+    show_status_message("Edit mode set to NOTE PROPERTIES")
   elseif mode == ALL_BUT_NOTE then
-    show_status_message("Edit mode set to All but Note")
+    show_status_message("Edit mode set to ALL BUT NOTE")
   elseif mode == NOTE_ONLY then
-    show_status_message("Edit mode set to Note Only")
+    show_status_message("Edit mode set to NOTE ONLY")
+  elseif mode == EFFECTS_ONLY then
+    show_status_message("Edit mode set to EFFECTS ONLY")
+  else
+    error("Invalid edit mode")
   end
 end

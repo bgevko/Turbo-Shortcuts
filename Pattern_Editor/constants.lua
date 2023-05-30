@@ -14,11 +14,12 @@ COLUMN = 2
 NOTE_PROPERTIES = 3
 ALL_BUT_NOTE = 4
 NOTE_ONLY = 5
+EFFECTS_ONLY = 6
 
 -- Default edit mode
-EDIT_MODE = COLUMN
+EDIT_MODE = LINE
 
--- Note column properties 
+-- Note column properties
 NOTE = 1
 VOL = 2
 PAN = 3
