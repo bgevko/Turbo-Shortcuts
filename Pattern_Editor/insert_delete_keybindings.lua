@@ -220,32 +220,32 @@ renoise.tool():add_keybinding {
 ------------------------------------------------------------------------
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set note delay 25%",
-  invoke = function() set_effect(NOTE_DELAY_25) end
+  invoke = function() set_track_effect(NOTE_DELAY_25) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set note delay 50%",
-  invoke = function() set_effect(NOTE_DELAY_50) end
+  invoke = function() set_track_effect(NOTE_DELAY_50) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set note delay 75%",
-  invoke = function() set_effect(NOTE_DELAY_75) end
+  invoke = function() set_track_effect(NOTE_DELAY_75) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set FX ARPEGGIO",
-  invoke = function() set_effect(ARPEGGIO) end
+  invoke = function() set_track_effect(ARPEGGIO) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set FX SLIDE UP",
-  invoke = function() set_effect(SLIDE_UP) end
+  invoke = function() set_track_effect(SLIDE_UP) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set FX SLIDE DOWN",
-  invoke = function() set_effect(SLIDE_DOWN) end
+  invoke = function() set_track_effect(SLIDE_DOWN) end
 }
 
 renoise.tool():add_keybinding {
@@ -560,7 +560,7 @@ renoise.tool():add_keybinding {
 }
 
 ------------------------------------------------------------------
--- Increment note properties
+-- FX Keybindings
 ------------------------------------------------------------------
 
 renoise.tool():add_keybinding {

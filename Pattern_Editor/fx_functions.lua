@@ -10,34 +10,30 @@ require "Pattern_Editor.constants"
 Parameters: type (constant), col (EffectsColumn object)
 Sets an effect to a column based on the provided type.
 -----------------------------------------------------------------------------]]
-function set_effect(type, col)
+function set_track_effect(type, col)
   local col = col or renoise.song().selected_line.effect_columns[DEFAULT_FX_COLUMN]
   local note_col = renoise.song().selected_note_column
-  local effect_string = ''
 
   if type == ARPEGGIO then
     col.number_string = '0A'
     col.amount_string = '00'
-    effect_string = 'ARPEGGIO'
   elseif type == SLIDE_UP then
     col.number_string = '0U'
     col.amount_string = '00'
-    effect_string = 'SLIDE UP'
   elseif type == SLIDE_DOWN then
     col.number_string = '0D'
     col.amount_string = '00'
-    effect_string = 'SLIDE DOWN'
-  elseif type == NOTE_DELAY_25 then
+  elseif type == DELAY_25 then
     note_col.delay_string = '40'
-  elseif type == NOTE_DELAY_50 then
+  elseif type == DELAY_50 then
     note_col.delay_string = '80'
-  elseif type == NOTE_DELAY_75 then
+  elseif type == DELAY_75 then
     note_col.delay_string = 'C0'
   else
     error("Invalid effect type")
     return
   end
-  show_status_message(effect_string .." set to col " .. DEFAULT_FX_COLUMN .. ".")
+  show_status_message(type .." set to col " .. DEFAULT_FX_COLUMN .. ".")
 end
 
 
@@ -100,7 +96,7 @@ function increment_note_property_all_notes(property, amount)
 end
 
 
---[[ INCREMENT MULTIPLE NOTES BY SUBDIVISION-----------------------------------------
+--[[ INCREMENT GROOVE BY SUBDIVISION-----------------------------------------
 Parameters: property (constant), subdivision (constant), amount (number)
 Increments a property of multiple notes based on a specified subdivision.
 -----------------------------------------------------------------------------]]
@@ -237,7 +233,7 @@ function set_effect_all_notes(type)
   for i = 1, #note_positions do
     local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[DEFAULT_FX_COLUMN]
     if col then
-      set_effect(type, col)
+      set_track_effect(type, col)
     end
   end
 end
@@ -258,7 +254,7 @@ function set_effect_all_notes_in_loop_block(type)
   for i = 1, #note_positions do
     local col = song.selected_pattern_track:line(note_positions[i]).effect_columns[DEFAULT_FX_COLUMN]
     if col then
-      set_effect(type, col)
+      set_track_effect(type, col)
     end
   end
 end
@@ -565,4 +561,109 @@ function set_fx_column(column)
     return
   end
   show_status_message("Selected FX column for edits: " .. DEFAULT_FX_COLUMN)
+end
+
+
+--[[ SET FX EDIT MODE ------------------------------------------------------------
+Parameters: mode (constant)
+Sets the effects edit mode. LOCAL will edit note effects, TRACK will edit
+effects for the entire track, and MASTER will edit effects for the master track.
+-----------------------------------------------------------------------------]]
+set_effects_edit_mode = function(mode)
+  if mode == FX_LOCAL then
+    FX_EDIT_MODE = FX_LOCAL
+  elseif mode == FX_TRACK then
+    FX_EDIT_MODE = FX_TRACK
+  elseif mode == FX_MASTER then
+    FX_EDIT_MODE = FX_MASTER
+  else
+    error("Mode must be LOCAL, TRACK, or MASTER")
+    return
+  end
+  show_status_message("Effects edit mode: " .. FX_EDIT_MODE)
+end
+
+
+--[[ NOTE EFFECTS CLASS ------------------------------------------------------------
+Master class for setting effects.
+-----------------------------------------------------------------------------]]
+local NoteEffects = {}
+function NoteEffects:new(o)
+  o = o or {}
+  setmetatable(o, self)
+  self.__index = self
+  return o
+end
+
+--[[ SET EFFECTS MASTER METHOD ------------------------------------------------
+This is a master class for setting effects. I created a class to keep the 
+logic all in one place. TrackEffects and MasterEffects will inherit from this.
+  Usage:
+  NoteEffects:set(ARPEGGIO, 5) -> sets arpeggio in the note column, line 5
+  TrackEffects:set(ARPEGGIO, 5) -> sets arpeggio in the effects column, line 5
+  MasterEffects:set(ARPEGGIO, 5) -> sets arpeggio in the master track, line 5
+-----------------------------------------------------------------------------]]
+function NoteEffects:set(type, line_num)
+  if type == ARPEGGIO then
+    self:_set_fx('0A', '00', line_num)
+  elseif type == SLIDE_UP then
+    self:_set_fx('0U', '00', line_num)
+  elseif type == SLIDE_DOWN then
+    self:_set_fx('0D', '00', line_num)
+  elseif type == DELAY_25 then
+    self:_set_fx('0Q', '40', line_num)
+  elseif type == DELAY_50 then
+    self:_set_fx('0Q', '80', line_num)
+  elseif type == DELAY_75 then
+    self:_set_fx('0Q', 'C0', line_num)
+  else
+    error("Invalid effect type")
+    return
+  end
+  show_status_message(type .. " effect set in " .. FX_EDIT_MODE .. " scope.")
+end
+
+--[[ SET EFFECTS NOTE-LEVEL IMPLEMENTATION ------------------------------------------------
+This is a private method specific to NoteEffects class. It handles getting the correct
+column and property names for setting effects in the note column. Do not use this
+directly, use the NoteEffects:set() method instead.
+-----------------------------------------------------------------------------]]
+function NoteEffects:_set_fx(fx_number_string, fx_amount_string, line_num)
+  local song = renoise.song()
+  local note_column_index = song.selected_note_column_index
+  if note_column_index == 0 then
+    note_column_index = 1
+  end
+  local col = song.selected_pattern_track:line(line_num).note_columns[note_column_index]
+
+  -- If the effect is delay, set it to delay column instead of note fx column
+  if fx_number_string == '0Q' then
+    col.delay_value = fx_amount_string
+    return
+  end
+
+  col.effect_number_string = fx_number_string
+  col.effect_amount_string = fx_amount_string
+end
+
+--[[ TRACK EFFECTS CLASS ------------------------------------------------------------
+TrackEffects class that inherits from NoteEffects.
+-----------------------------------------------------------------------------]]
+TrackEffects = NoteEffects:new()
+
+--[[ SET EFFECTS TRACK-LEVEL IMPLEMENTATION ------------------------------------------------
+This method overrides NoteEffects:_set_fx() to handle getting the correct
+column and property names for setting effects in the track column. Do not use this
+this directly, use the TrackEffects:set() method instead.
+-----------------------------------------------------------------------------]]
+function TrackEffects:_set_fx(fx_number_string, fx_amount_string, line_num)
+  local song = renoise.song()
+  local fx_column_index = song.selected_effect_column_index
+  if fx_column_index == 0 then
+    fx_column_index = DEFAULT_FX_COLUMN
+  end
+  local col = song.selected_pattern_track:line(line_num).effect_columns[fx_column_index]
+
+  col.number_string = fx_number_string
+  col.amount_string = fx_amount_string
 end
