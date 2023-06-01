@@ -250,12 +250,12 @@ renoise.tool():add_keybinding {
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set FX all notes ARPEGGIO",
-  invoke = function() set_effect_all_notes(ARPEGGIO) end
+  invoke = function() set_track_effect_all_notes(ARPEGGIO) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set FX all notes in loop ARPEGGIO",
-  invoke = function() set_effect_all_notes_in_loop_block(ARPEGGIO) end
+  invoke = function() set_track_effect_all_notes_in_loop_block(ARPEGGIO) end
 }
 
 renoise.tool():add_keybinding {
