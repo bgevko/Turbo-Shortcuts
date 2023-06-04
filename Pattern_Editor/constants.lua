@@ -28,7 +28,7 @@ NOTE_FX = 5
 DEFAULT_NOTE_PROPERTY = VOL
 
 -- Subdivisions
-EIGHTH = 1
+_ENV["8TH"] = 1
 SIXTEENTH = 2
 
 -- FX parameters

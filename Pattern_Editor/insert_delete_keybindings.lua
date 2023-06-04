@@ -11,7 +11,7 @@ require "Pattern_Editor.constants"
 
 
 --------------------------------------------------------------------------------
--- Copy, nudge, duplicate keybindings
+-- COPY, NUDGE, AND FILL PATTERN KEYBINDINGS
 --------------------------------------------------------------------------------
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Nudge note up",
@@ -144,7 +144,7 @@ renoise.tool():add_keybinding {
 }
 
 --------------------------------------------------
--- Delete keybindings
+-- DELETE KEYBINDINGS
 --------------------------------------------------
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Multipurpose delete (uses edit modes)",
@@ -216,78 +216,289 @@ renoise.tool():add_keybinding {
 }
 
 ------------------------------------------------------------------------
--- Note and track effects keybindings
+-- NOTE EFFECTS
 ------------------------------------------------------------------------
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set note delay 25%",
-  invoke = function() set_track_effect(NOTE_DELAY_25) end
+  invoke = function() NoteEffects:set(DELAY_25) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set note delay 50%",
-  invoke = function() set_track_effect(NOTE_DELAY_50) end
+  invoke = function() NoteEffects:set(DELAY_50) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Set note delay 75%",
-  invoke = function() set_track_effect(NOTE_DELAY_75) end
+  invoke = function() NoteEffects:set(DELAY_75) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set FX ARPEGGIO",
-  invoke = function() set_track_effect(ARPEGGIO) end
+  name = "Pattern Editor:Insert/Delete:Set note ARPEGGIO",
+  invoke = function() NoteEffects:set(ARPEGGIO) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set FX SLIDE UP",
-  invoke = function() set_track_effect(SLIDE_UP) end
+  name = "Pattern Editor:Insert/Delete:Set note SLIDE UP",
+  invoke = function() NoteEffects:set(SLIDE_UP) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set FX SLIDE DOWN",
-  invoke = function() set_track_effect(SLIDE_DOWN) end
+  name = "Pattern Editor:Insert/Delete:Set note SLIDE DOWN",
+  invoke = function() NoteEffects:set(SLIDE_DOWN) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set FX all notes ARPEGGIO",
-  invoke = function() set_track_effect_all_notes(ARPEGGIO) end
+  name = "Pattern Editor:Insert/Delete:Set all notes ARPEGGIO",
+  invoke = function() NoteEffects:set_all_notes(ARPEGGIO) end
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Set FX all notes in loop ARPEGGIO",
-  invoke = function() set_track_effect_all_notes_in_loop_block(ARPEGGIO) end
+  name = "Pattern Editor:Insert/Delete:Set all notes in loop ARPEGGIO",
+  invoke = function() NoteEffects:set_all_notes_in_loop(ARPEGGIO) end
 }
 
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment note FX left digit",
+  invoke = function() NoteEffects:inc_left(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement note FX left digit",
+  invoke = function() NoteEffects:inc_left(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment note FX right digit",
+  invoke = function() NoteEffects:inc_right(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement note FX right digit",
+  invoke = function() NoteEffects:inc_right(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment note FX",
+  invoke = function() NoteEffects:inc(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement note FX",
+  invoke = function() NoteEffects:inc(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment all notes FX left digit",
+  invoke = function() NoteEffects:inc_left_all(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement all notes FX left digit",
+  invoke = function() NoteEffects:inc_left_all(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment all notes FX right digit",
+  invoke = function() NoteEffects:inc_right_all(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement all notes FX right digit",
+  invoke = function() NoteEffects:inc_right_all(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment all notes FX",
+  invoke = function() NoteEffects:inc_all(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement all notes FX",
+  invoke = function() NoteEffects:inc_all(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment all notes FX (loop) left digit",
+  invoke = function() NoteEffects:inc_left_loop(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement all notes FX (loop) left digit",
+  invoke = function() NoteEffects:inc_left_loop(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment all notes FX (loop) right digit",
+  invoke = function() NoteEffects:inc_right_loop(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement all notes FX (loop) right digit",
+  invoke = function() NoteEffects:inc_right_loop(-1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment all notes FX (loop)",
+  invoke = function() NoteEffects:inc_all_loop(1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement all notes FX (loop)",
+  invoke = function() NoteEffects:inc_all_loop(-1) end
+}
+
+------------------------------------------------------------------
+-- VOL, PAN, DELAY (note properties)
+------------------------------------------------------------------
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Increment note delay (1)",
-  invoke = function() increment_note_property(DELAY, 16) end
+  invoke = function() NoteEffects:inc_prop(DELAY, 16) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Decrement note delay (-1)",
-  invoke = function() increment_note_property(DELAY, -16) end
+  invoke = function() NoteEffects:inc_prop(DELAY, -16) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Increment note delay (16)",
-  invoke = function() increment_note_property(DELAY, 16) end
+  invoke = function() NoteEffects:inc_prop(DELAY, 16) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Decrement note delay (-16)",
-  invoke = function() increment_note_property(DELAY, -16) end
+  invoke = function() NoteEffects:inc_prop(DELAY, -16) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Increment note delay (64)",
-  invoke = function() increment_note_property(DELAY, 64) end
+  invoke = function() NoteEffects:inc_prop(DELAY, 64) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Decrement note delay (-64)",
-  invoke = function() increment_note_property(DELAY, -64) end
+  invoke = function() NoteEffects:inc_prop(DELAY, -64) end
 }
 
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment pan all notes (1)",
+  invoke = function() NoteEffects:inc_prop_all(PAN, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement pan all notes (-1)",
+  invoke = function() NoteEffects:inc_prop_all(PAN, -1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment pan all notes (8)",
+  invoke = function() NoteEffects:inc_prop_all(PAN, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement pan all notes (-8)",
+  invoke = function() NoteEffects:inc_prop_all(PAN, -8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume +8/-8",
+  invoke = function() NoteEffects:randomize_prop(VOL, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume +16/-16",
+  invoke = function() NoteEffects:randomize_prop(VOL, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume +32/-32",
+  invoke = function() NoteEffects:randomize_prop(VOL, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan +8/-8",
+  invoke = function() NoteEffects:randomize_prop(PAN, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan +16/-16",
+  invoke = function() NoteEffects:randomize_prop(PAN, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan +32/-32",
+  invoke = function() NoteEffects:randomize_prop(PAN, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize delay +8/-8",
+  invoke = function() NoteEffects:randomize_prop(DELAY, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize delay +16/-16",
+  invoke = function() NoteEffects:randomize_prop(DELAY, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize delay +32/-32",
+  invoke = function() NoteEffects:randomize_prop(DELAY, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume all notes +8/-8",
+  invoke = function() NoteEffects:randomize_prop_all(VOL, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume all notes +16/-16",
+  invoke = function() NoteEffects:randomize_prop_all(VOL, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize volume all notes +32/-32",
+  invoke = function() NoteEffects:randomize_prop_all(VOL, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan all notes +8/-8",
+  invoke = function() NoteEffects:randomize_prop_all(PAN, 8) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan all notes +16/-16",
+  invoke = function() NoteEffects:randomize_prop_all(PAN, 16) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Randomize pan all notes +32/-32",
+  invoke = function() NoteEffects:randomize_prop_all(PAN, 32) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment VOL left digit",
+  invoke = function() NoteEffects:inc_prop_left(VOL, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement VOL left digit",
+  invoke = function() NoteEffects:inc_prop_left(VOL, -1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Increment VOL right digit",
+  invoke = function() NoteEffects:inc_prop_right(VOL, 1) end
+}
+
+renoise.tool():add_keybinding {
+  name = "Pattern Editor:Insert/Delete:Decrement VOL right digit",
+  invoke = function() NoteEffects:inc_prop_right(VOL, -1) end
+}
+
+------------------------------------------------------------------
+-- GROOVE EFFECTS
+------------------------------------------------------------------
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Increment delay all 8th notes (1)",
   invoke = function() increment_groove(EIGHTH, 1) end
@@ -329,117 +540,6 @@ renoise.tool():add_keybinding {
 }
 
 renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment pan all notes (1)",
-  invoke = function() increment_note_property_all_notes(PAN, 1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement pan all notes (-1)",
-  invoke = function() increment_note_property_all_notes(PAN, -1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment pan all notes (8)",
-  invoke = function() increment_note_property_all_notes(PAN, 8) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement pan all notes (-8)",
-  invoke = function() increment_note_property_all_notes(PAN, -8) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize volume +8/-8",
-  invoke = function() randomize_note_property(VOL, 8) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize volume +16/-16",
-  invoke = function() randomize_note_property(VOL, 16) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize volume +32/-32",
-  invoke = function() randomize_note_property(VOL, 32) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize pan +8/-8",
-  invoke = function() randomize_note_property(PAN, 8) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize pan +16/-16",
-  invoke = function() randomize_note_property(PAN, 16) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize pan +32/-32",
-  invoke = function() randomize_note_property(PAN, 32) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize delay +8/-8",
-  invoke = function() randomize_note_property(DELAY, 8) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize delay +16/-16",
-  invoke = function() randomize_note_property(DELAY, 16) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize delay +32/-32",
-  invoke = function() randomize_note_property(DELAY, 32) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize volume all notes +8/-8",
-  invoke = function() randomize_note_property_all_notes(VOL, 8) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize volume all notes +16/-16",
-  invoke = function() randomize_note_property_all_notes(VOL, 16) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize volume all notes +32/-32",
-  invoke = function() randomize_note_property_all_notes(VOL, 32) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize pan all notes +8/-8",
-  invoke = function() randomize_note_property_all_notes(PAN, 8) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize pan all notes +16/-16",
-  invoke = function() randomize_note_property_all_notes(PAN, 16) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize pan all notes +32/-32",
-  invoke = function() randomize_note_property_all_notes(PAN, 32) end
-}
-
--- randomize groove all notes
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize groove all notes +8/-8",
-  invoke = function() randomize_note_property_all_notes(DELAY, 8) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize groove all notes +16/-16",
-  invoke = function() randomize_note_property_all_notes(DELAY, 16) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Randomize groove all notes +32/-32",
-  invoke = function() randomize_note_property_all_notes(DELAY, 32) end
-}
-
-renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete:Randomize groove 8th notes +8/-8",
   invoke = function() randomize_groove(EIGHTH, 8) end
 }
@@ -469,159 +569,45 @@ renoise.tool():add_keybinding {
   invoke = function() randomize_groove(SIXTEENTH, 32) end
 }
 
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment FX left digit",
-  invoke = function() inc_4bit_hex_fx(X, 1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement FX left digit",
-  invoke = function() inc_4bit_hex_fx(X, -1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment FX right digit",
-  invoke = function() inc_4bit_hex_fx(Y, 1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement FX right digit",
-  invoke = function() inc_4bit_hex_fx(Y, -1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment FX",
-  invoke = function() inc_8bit_hex_fx(1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement FX",
-  invoke = function() inc_8bit_hex_fx(-1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment FX all notes left digit",
-  invoke = function() inc_4bit_fx_all_notes(X, 1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement FX all notes left digit",
-  invoke = function() inc_4bit_fx_all_notes(X, -1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment FX all notes right digit",
-  invoke = function() inc_4bit_fx_all_notes(Y, 1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement FX all notes right digit",
-  invoke = function() inc_4bit_fx_all_notes(Y, -1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment FX all notes",
-  invoke = function() inc_8bit_fx_all_notes(1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement FX all notes",
-  invoke = function() inc_8bit_fx_all_notes(-1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment FX loop block left digit",
-  invoke = function() inc_4bit_fx_loop(X, 1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement FX loop block left digit",
-  invoke = function() inc_4bit_fx_loop(X, -1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment FX loop block right digit",
-  invoke = function() inc_4bit_fx_loop(Y, 1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement FX loop block right digit",
-  invoke = function() inc_4bit_fx_loop(Y, -1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment FX loop block",
-  invoke = function() inc_8bit_fx_loop(1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement FX loop block",
-  invoke = function() inc_8bit_fx_loop(-1) end
-}
-
 ------------------------------------------------------------------
--- FX Keybindings
-------------------------------------------------------------------
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment note property left digit",
-  invoke = function() inc_4bit_note_property(X, 1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement note property left digit",
-  invoke = function() inc_4bit_note_property(X, -1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Increment note property right digit",
-  invoke = function() inc_4bit_note_property(Y, 1) end
-}
-
-renoise.tool():add_keybinding {
-  name = "Pattern Editor:Insert/Delete:Decrement note property right digit",
-  invoke = function() inc_4bit_note_property(Y, -1) end
-}
-
-------------------------------------------------------------------
--- Set Default FX column for edits
+-- SET DEFAULT FX COLUMN FOR FOR MULTIPURPOSE FX COMMANDS
 ------------------------------------------------------------------
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete: Set FX column 1 for edits",
-  invoke = function() set_fx_column(FX1) end
+  invoke = function() set_default_fx_column(FX1) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete: Set FX column 2 for edits",
-  invoke = function() set_fx_column(FX2) end
+  invoke = function() set_default_fx_column(FX2) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete: Set FX column 3 for edits",
-  invoke = function() set_fx_column(FX3) end
+  invoke = function() set_default_fx_column(FX3) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete: Set FX column 4 for edits",
-  invoke = function() set_fx_column(FX4) end
+  invoke = function() set_default_fx_column(FX4) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete: Set FX column 5 for edits",
-  invoke = function() set_fx_column(FX5) end
+  invoke = function() set_default_fx_column(FX5) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete: Set FX column 6 for edits",
-  invoke = function() set_fx_column(FX6) end
+  invoke = function() set_default_fx_column(FX6) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete: Set FX column 7 for edits",
-  invoke = function() set_fx_column(FX7) end
+  invoke = function() set_default_fx_column(FX7) end
 }
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Insert/Delete: Set FX column 8 for edits",
-  invoke = function() set_fx_column(FX8) end
+  invoke = function() set_default_fx_column(FX8) end
 }
