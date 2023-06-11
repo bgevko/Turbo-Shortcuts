@@ -21,10 +21,20 @@ function jump(direction, specified_amount)
   -- Jump by specified amount, or by JUMP_STEP if specified_amount is not set
   if (direction == UP) then
     amount = specified_amount or (-1 * JUMP_STEP)
+    if amount == 0 then
+      amount = -1
+    elseif amount > 0 then
+      amount = amount * -1
+    end
   else -- JUMP_DOWN
     amount = specified_amount or (1 * JUMP_STEP)
+    if amount == 0 then
+      amount = 1
+    elseif amount < 0 then
+      amount = amount * -1
+    end
   end
-
+  
   -- Jump execution
   new_pos.line = new_pos.line + amount
   -- Prevent wraparound (stop at bottom of pattern and at top of pattern)
@@ -48,6 +58,11 @@ end
   --------------------------------------------------------------------]]
 function set_jump_step(amount)
   JUMP_STEP = amount
+  if JUMP_STEP < 1 then
+    JUMP_STEP = 1
+  elseif JUMP_STEP > JUMP_MAX then
+    JUMP_STEP = JUMP_MAX
+  end
   show_status_message("Jump step set to " .. amount)
 end
 
@@ -68,7 +83,7 @@ end
 --[[ HALF JUMP STEP ---------------------------------------------------
   Halves the global jump step value.
   --------------------------------------------------------------------]]
-function half_jump_step()
+function halve_jump_step()
   if (JUMP_STEP > 1) then
     JUMP_STEP = JUMP_STEP / 2
     show_status_message("Jump step halved to " .. JUMP_STEP)

@@ -73,7 +73,7 @@ renoise.tool():add_keybinding {
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Navigation:Half Jump Step",
-  invoke = function() half_jump_step() end
+  invoke = function() halve_jump_step() end
 }
 
 renoise.tool():add_keybinding {
@@ -83,7 +83,7 @@ renoise.tool():add_keybinding {
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Navigation:Jump Up 4 Lines",
-  invoke = function() jump(UP, -4) end
+  invoke = function() jump(UP, 4) end
 }
 
 renoise.tool():add_keybinding {
@@ -93,7 +93,7 @@ renoise.tool():add_keybinding {
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Navigation:Jump Up 8 Lines",
-  invoke = function() jump(UP, -8) end
+  invoke = function() jump(UP, 8) end
 }
 
 renoise.tool():add_keybinding {
@@ -103,7 +103,7 @@ renoise.tool():add_keybinding {
 
 renoise.tool():add_keybinding {
   name = "Pattern Editor:Navigation:Jump Up 16 Lines",
-  invoke = function() jump(UP, -16) end
+  invoke = function() jump(UP, 16) end
 }
 
 renoise.tool():add_keybinding {
