@@ -19,8 +19,14 @@ function nudge_line(direction)
   local selected_line_index = song.selected_line_index
   local selected_line = song.selected_line
   local step = (direction == DOWN) and 1 or -1
-  local next_line = song.selected_pattern_track.lines[selected_line_index + step]
-  next_line:copy_from(selected_line)
+
+  local line_index = selected_line_index + step
+  if line_index < 1 or line_index > song.selected_pattern.number_of_lines then
+    return
+  end
+
+  local next_line = song.selected_pattern_track.lines[line_index]
+  next_line:copy_from(selected_line) 
   selected_line:clear()
   jump(direction)
 end
@@ -143,8 +149,13 @@ end
 function copy_note_properties(direction)
   local song = renoise.song()
   local selected_line_index = song.selected_line_index
+  local step
 
-  local step = (direction == DOWN) and 1 or -1
+  if direction == DOWN then
+    step = 1
+  else
+    step = -1
+  end
 
   if selected_line_index + step < 1 or selected_line_index + step > song.selected_pattern.number_of_lines then
     return
@@ -158,6 +169,7 @@ function copy_note_properties(direction)
     next_column.panning_string = song.selected_pattern_track:line(selected_line_index).note_columns[i].panning_string
     next_column.delay_string = song.selected_pattern_track:line(selected_line_index).note_columns[i].delay_string
     next_column.effect_number_string = song.selected_pattern_track:line(selected_line_index).note_columns[i].effect_number_string
+    next_column.effect_amount_string = song.selected_pattern_track:line(selected_line_index).note_columns[i].effect_amount_string
   end
 
   jump(direction)

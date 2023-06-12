@@ -6,7 +6,6 @@
 
 require "Pattern_Editor.navigation_functions" -- All navigation functions are defined here
 require "Pattern_Editor.constants"
-
 --------------------------------------------------------------------------------
 -- KEY BINDINGS
 --------------------------------------------------------------------------------

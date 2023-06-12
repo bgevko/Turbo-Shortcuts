@@ -57,9 +57,10 @@ end
 --[[ DELETE LINE ------------------------------------------------------
   Deletes the currently selected line in the pattern editor.
 --------------------------------------------------------------------------------]]
-function delete_line()
+function delete_line(line)
+  local line_index = line or renoise.song().selected_line_index
   local song = renoise.song()
-  song.selected_line:clear()
+  song.selected_pattern_track:line(line_index):clear()
 end
 
 

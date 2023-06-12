@@ -88,9 +88,18 @@ function handle_auto_reload_debug_notification()
   if (options.show_debug_prints.value) then
     print("com.renoise.TurboShortcuts: ** auto_reload_debug notification")
   end
-  -- Run unit tests if enabled
+
+  -- Run unit tests if enabled (Disabled by default)
   if (options.run_tests_on_startup.value) then
     print("Initializing tests...")
-    pattern_editor_tests.run_tests()
+
+    -- If you choose to run tests, run these one at a time. Because renoise has a bit of latency when
+    -- certain operations are performed, the tests are timed manually. If you run them all at once,
+    -- some tests will fail. Until we get support for async/await, this is the best we can do.
+    -- Test output is printed to Scripting Terminal/Editor upon loading the tool.
+
+
+    -- pattern_editor_tests.nav_tests()
+    pattern_editor_tests.copy_delete_tests()
   end
 end
